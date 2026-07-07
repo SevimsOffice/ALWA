@@ -1,0 +1,30 @@
+{
+  "_comment": "EDIT THIS FILE to change which words/phrases mean the customer wants a human (enroll / register / be called / talk to a person). When detected, the row is flagged needs_human=yes and staff are notified. Matching is case-insensitive and accent-insensitive. Each entry can have a 'topic' used to route to the right staff members (see recipients.json); entries without a topic use 'sales'.",
+  "keywords": [
+    { "match": "kayit olmak", "topic": "sales" },
+    { "match": "kayit yaptir", "topic": "sales" },
+    { "match": "kaydolmak", "topic": "sales" },
+    { "match": "yazilmak istiyorum", "topic": "sales" },
+    { "match": "beni arayin", "topic": "sales" },
+    { "match": "beni arar misiniz", "topic": "sales" },
+    { "match": "arayabilir misiniz", "topic": "sales" },
+    { "match": "numaram", "topic": "sales" },
+    { "match": "telefonla gorusmek", "topic": "sales" },
+    { "match": "danismanla gorusmek", "topic": "sales" },
+    { "match": "yetkiliyle gorusmek", "topic": "sales" },
+    { "match": "gercek biri", "topic": "sales" },
+    { "match": "insanla konusmak", "topic": "sales" },
+    { "match": "enroll", "topic": "sales" },
+    { "match": "register", "topic": "sales" },
+    { "match": "sign up", "topic": "sales" },
+    { "match": "call me", "topic": "sales" },
+    { "match": "talk to a human", "topic": "sales" },
+    { "match": "talk to a person", "topic": "sales" },
+    { "match": "real person", "topic": "sales" },
+    { "match": "speak to someone", "topic": "sales" },
+    { "match": "sikayet", "topic": "complaints" },
+    { "match": "complaint", "topic": "complaints" },
+    { "match": "para iadesi", "topic": "complaints" },
+    { "match": "refund", "topic": "complaints" }
+  ]
+}

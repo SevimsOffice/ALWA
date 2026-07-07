@@ -1,0 +1,24 @@
+{
+  "name": "alwa",
+  "version": "1.0.0",
+  "description": "American Life WhatsApp Agent — AI customer-support agent for WhatsApp with Google Sheets logging, intent detection, human handover and error tracking.",
+  "main": "src/index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "node --test",
+    "mock": "MOCK_MODE=true node src/index.js",
+    "simulate": "node scripts/simulate.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "google-auth-library": "^9.14.0"
+  },
+  "license": "UNLICENSED",
+  "private": true
+}

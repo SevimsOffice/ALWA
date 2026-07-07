@@ -1,0 +1,43 @@
+{
+  "_comment": "EDIT THIS FILE to change which words/phrases make the bot politely close the conversation and go silent for that customer. Matching is case-insensitive and accent-insensitive (ı=i, ş=s...). 'phrases' are matched as substrings of the whole message; 'words' must appear as whole words. After the closing message is sent, the bot stops replying to that phone number for 'muteHours' hours (their messages are still logged to the Sheet).",
+  "phrases": [
+    "stop messaging",
+    "stop texting",
+    "don't write me",
+    "dont write me",
+    "not interested",
+    "leave me alone",
+    "unsubscribe",
+    "yazmayin",
+    "yazmayın artik",
+    "bir daha yazma",
+    "mesaj atmayin",
+    "mesaj atma",
+    "rahatsiz etmeyin",
+    "rahatsız etme",
+    "ilgilenmiyorum",
+    "istemiyorum",
+    "fiyat istemiyorum",
+    "beni listeden cikar",
+    "beni aramayin"
+  ],
+  "words": [
+    "spam",
+    "siktir",
+    "defol",
+    "salak",
+    "aptal",
+    "gerizekali",
+    "mal",
+    "fuck",
+    "asshole",
+    "idiot",
+    "scam",
+    "dolandirici"
+  ],
+  "closingMessage": {
+    "tr": "Anlıyorum, rahatsız ettiysek özür dileriz. İyi günler dileriz! 🌟 Fikriniz değişirse buradayız.",
+    "en": "Understood — sorry to have bothered you. Have a great day! 🌟 We're here if you ever change your mind."
+  },
+  "muteHours": 72
+}

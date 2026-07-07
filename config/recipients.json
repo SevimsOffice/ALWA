@@ -1,0 +1,31 @@
+{
+  "_comment": "EDIT THIS FILE to change who gets alerts. 'emailRecipients' get ALL alert emails (handover + errors) via the Apps Script. 'staff' entries are matched by topic for handover alerts — a staff member with topics ['sales'] is alerted for sales handovers; use ['*'] to receive everything. telegramChatId / callmebotPhone+callmebotApiKey are OPTIONAL per person and only used if the matching channel is enabled below AND the corresponding tokens are set in the environment (.env).",
+  "emailRecipients": [
+    "owner@example.com",
+    "manager@example.com",
+    "sevimdurmus@gmail.com"
+  ],
+  "staff": [
+    {
+      "name": "Sales Advisor 1",
+      "topics": ["sales"],
+      "email": "sales1@example.com",
+      "telegramChatId": "",
+      "callmebotPhone": "",
+      "callmebotApiKey": ""
+    },
+    {
+      "name": "Manager",
+      "topics": ["*"],
+      "email": "manager@example.com",
+      "telegramChatId": "",
+      "callmebotPhone": "",
+      "callmebotApiKey": ""
+    }
+  ],
+  "channels": {
+    "email": true,
+    "telegram": false,
+    "callmebot": false
+  }
+}
