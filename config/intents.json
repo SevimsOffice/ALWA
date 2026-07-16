@@ -1,0 +1,12 @@
+{
+  "_comment": "EDIT THIS FILE to change the intent categories the AI classifies every customer message into. 'id' values appear in the conversations log and the monthly report; 'description' tells the AI what the category means (write it in any language). 'confidenceThreshold': if the AI's confidence is below this (0-1), the bot sends the button menu from buttons.json instead of guessing.",
+  "confidenceThreshold": 0.55,
+  "intents": [
+    { "id": "kurs_bilgisi", "description": "Egitim/kurs/program icerigi, seviyeler, tarihler, kontenjan, nasil calisiyor sorulari" },
+    { "id": "fiyat", "description": "Fiyat, ucret, odeme, taksit, indirim ile ilgili her soru" },
+    { "id": "sikayet", "description": "Sikayet, memnuniyetsizlik, sorun bildirimi, olumsuz deneyim ('memnun kalmadik', 'hoca gelmedi', 'iade istiyorum' gibi)" },
+    { "id": "oneri", "description": "Oneri, istek, iyilestirme fikri, geri bildirim" },
+    { "id": "insan", "description": "Gercek biriyle/temsilciyle konusma, kayit olma, aranma, teklif/toplanti talebi" },
+    { "id": "diger", "description": "Selamlasma, tesekkur ve diger kategorilere girmeyen her sey" }
+  ]
+}

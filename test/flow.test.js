@@ -29,7 +29,7 @@ test('a normal question gets an AI reply, a WhatsApp send, and two sheet rows', 
   });
 
   assert.ok(result.reply, 'should produce a reply');
-  assert.strictEqual(result.intent, 'question');
+  assert.strictEqual(result.intent, 'fiyat');
   assert.strictEqual(result.needsHuman, false);
 
   // reply actually "sent" on WhatsApp
@@ -68,11 +68,14 @@ test('conversation memory is scoped per phone number', async () => {
 });
 
 test('the FAQ content is injected into the system prompt', async () => {
+  const { getFaq } = require('../src/config');
   await handler.handleIncomingMessage({ from: '905551112233', text: 'test' });
   const systemMsg = mocks.state.aiCalls[0].messages[0];
   assert.strictEqual(systemMsg.role, 'system');
-  assert.ok(systemMsg.content.includes('American Life'), 'system prompt present');
-  assert.ok(systemMsg.content.includes('14.900 TL'), 'FAQ content injected');
+  assert.ok(systemMsg.content.includes('BİLGİ TABANI'), 'FAQ section header present');
+  // whatever faq.md currently contains must be inside the system prompt
+  const faqMarker = getFaq().trim().slice(0, 40);
+  assert.ok(systemMsg.content.includes(faqMarker), 'FAQ content injected');
 });
 
 // ---------- handover ----------

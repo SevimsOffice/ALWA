@@ -35,6 +35,11 @@ const env = {
   appsScriptUrl: process.env.APPS_SCRIPT_URL || '',
   appsScriptSecret: process.env.APPS_SCRIPT_SECRET || '',
 
+  supabaseUrl: (process.env.SUPABASE_URL || '').replace(/\/+$/, ''),
+  supabaseServiceKey: process.env.SUPABASE_SERVICE_ROLE_KEY || '',
+
+  reportSecret: process.env.REPORT_SECRET || '',
+
   telegramBotToken: process.env.TELEGRAM_BOT_TOKEN || '',
   telegramChatIds: (process.env.TELEGRAM_CHAT_IDS || '')
     .split(',').map((s) => s.trim()).filter(Boolean),
@@ -92,6 +97,18 @@ function getRecipients() {
   return readCached('config/recipients.json', JSON.parse);
 }
 
+function getIntents() {
+  return readCached('config/intents.json', JSON.parse);
+}
+
+function getSla() {
+  return readCached('config/sla.json', JSON.parse);
+}
+
+function getButtons() {
+  return readCached('config/buttons.json', JSON.parse);
+}
+
 /** Test hook: force re-reading all editable files on next access. */
 function clearConfigCache() {
   cache.clear();
@@ -104,5 +121,8 @@ module.exports = {
   getNegativeKeywords,
   getHandoverKeywords,
   getRecipients,
+  getIntents,
+  getSla,
+  getButtons,
   clearConfigCache,
 };

@@ -12,10 +12,13 @@
  */
 
 const express = require('express');
-const { env } = require('./config');
+const { env, getFaq, getSla } = require('./config');
 const logger = require('./logger');
 const handler = require('./handler');
 const sheets = require('./sheets');
+const complaints = require('./complaints');
+const report = require('./report');
+const notify = require('./notify');
 const errorTracker = require('./errorTracker');
 const mocks = require('./mocks');
 
@@ -101,9 +104,12 @@ app.post('/webhook', (req, res) => {
 });
 
 /**
- * Pull plain-text customer messages out of Meta's webhook envelope.
- * (Statuses/read-receipts and non-text messages are ignored, except
- * that unsupported types get a gentle canned reply.)
+ * Pull customer messages out of Meta's webhook envelope. Handles:
+ *  - type "text"        → plain messages
+ *  - type "interactive" → reply-button / list taps (our clarification menu)
+ *  - type "button"      → quick-reply taps on TEMPLATE messages (surveys);
+ *                         context.id links the answer back to the survey
+ * Statuses/read-receipts and media messages are ignored (logged).
  */
 function extractTextMessages(body) {
   const out = [];
@@ -113,6 +119,19 @@ function extractTextMessages(body) {
       for (const m of change.value?.messages || []) {
         if (m.type === 'text' && m.text?.body) {
           out.push({ id: m.id, from: m.from, text: m.text.body });
+        } else if (m.type === 'interactive' && m.interactive) {
+          const r = m.interactive.button_reply || m.interactive.list_reply;
+          if (r) {
+            out.push({
+              id: m.id, from: m.from, text: r.title,
+              buttonId: r.id, contextId: m.context?.id,
+            });
+          }
+        } else if (m.type === 'button' && m.button) {
+          out.push({
+            id: m.id, from: m.from, text: m.button.text,
+            buttonId: m.button.payload || 'template-reply', contextId: m.context?.id,
+          });
         } else if (m.from) {
           logger.step(m.from, 'non-text message ignored', `type=${m.type}`);
         }
@@ -121,6 +140,32 @@ function extractTextMessages(body) {
   }
   return out;
 }
+
+// ---------- shared knowledge base ----------
+
+// The single source of truth for answers, served as plain text so the
+// ManyChat/Instagram flow can pull the SAME faq.md this bot uses —
+// prices/details never live in two places.
+app.get('/faq', (_req, res) => {
+  res.type('text/plain; charset=utf-8').send(getFaq());
+});
+
+// ---------- reporting ----------
+
+// Monthly stats: GET /report?month=2026-07&secret=REPORT_SECRET
+// -> { totalIncoming, uniqueCustomers, byIntent, handovers }
+app.get('/report', async (req, res) => {
+  if (!env.mockMode) {
+    if (!env.reportSecret) return res.status(403).json({ error: 'Set REPORT_SECRET to enable this endpoint.' });
+    if (req.query.secret !== env.reportSecret) return res.status(403).json({ error: 'Wrong secret.' });
+  }
+  const month = String(req.query.month || new Date().toISOString().slice(0, 7));
+  try {
+    res.json(await report.buildMonthlyReport(month));
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
 
 // ---------- local testing helpers ----------
 
@@ -132,11 +177,15 @@ app.post('/test-message', async (req, res) => {
   if (!env.mockMode && !env.testEndpointEnabled) {
     return res.status(403).json({ error: 'Enable MOCK_MODE or TEST_ENDPOINT_ENABLED to use this.' });
   }
-  const { from, text } = req.body || {};
+  const { from, text, buttonId, contextId } = req.body || {};
   if (!from || !text) {
-    return res.status(400).json({ error: 'Body must be {"from": "<phone>", "text": "<message>"}' });
+    return res.status(400).json({ error: 'Body must be {"from": "<phone>", "text": "<message>"} (optional: buttonId, contextId)' });
   }
-  const result = await handler.handleIncomingMessage({ from: String(from), text: String(text) });
+  const result = await handler.handleIncomingMessage({
+    from: String(from), text: String(text),
+    buttonId: buttonId ? String(buttonId) : undefined,
+    contextId: contextId ? String(contextId) : undefined,
+  });
   res.json(result);
 });
 
@@ -155,6 +204,34 @@ process.on('uncaughtException', (err) => {
   errorTracker.record({ step: 'uncaught-exception', error: err, severity: 'critical' });
 });
 
+// Periodic jobs (single Railway instance -> in-process timers suffice):
+//  - overdue-complaint SLA reminders
+//  - monthly report email on the 1st (for the previous month)
+let lastReportMonth = '';
+function startPeriodicJobs() {
+  const minutes = getSla().reminderCheckMinutes || 60;
+  setInterval(() => complaints.checkOverdue(), minutes * 60 * 1000).unref();
+
+  setInterval(async () => {
+    const now = new Date();
+    if (now.getUTCDate() !== 1) return;
+    const prev = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 1));
+    const month = prev.toISOString().slice(0, 7);
+    if (lastReportMonth === month) return;
+    lastReportMonth = month;
+    try {
+      const r = await report.buildMonthlyReport(month);
+      await notify.sendAlert({
+        subject: `📊 ALWA aylık rapor — ${month}`,
+        body: report.formatReportText(r),
+      });
+      logger.info(`Monthly report for ${month} emailed`);
+    } catch (err) {
+      await errorTracker.record({ step: 'apps-script', error: new Error(`monthly report: ${err.message}`) });
+    }
+  }, 60 * 60 * 1000).unref();
+}
+
 // Only start the server when run directly (tests import the app instead).
 if (require.main === module) {
   app.listen(env.port, async () => {
@@ -166,6 +243,7 @@ if (require.main === module) {
       // will keep erroring visibly until credentials are fixed.
       await errorTracker.record({ step: 'Sheet', error: err, severity: 'critical' });
     }
+    startPeriodicJobs();
   });
 }
 

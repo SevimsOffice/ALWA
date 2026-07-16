@@ -14,6 +14,24 @@ const mocks = require('./mocks');
 const GRAPH_VERSION = 'v20.0';
 const SEND_TIMEOUT_MS = 15_000;
 
+async function post(payload) {
+  const url = `https://graph.facebook.com/${GRAPH_VERSION}/${env.whatsappPhoneNumberId}/messages`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${env.whatsappToken}`,
+    },
+    body: JSON.stringify({ messaging_product: 'whatsapp', ...payload }),
+    signal: AbortSignal.timeout(SEND_TIMEOUT_MS),
+  });
+  if (!res.ok) {
+    const body = await res.text().catch(() => '');
+    throw new Error(`WhatsApp send failed ${res.status}: ${body.slice(0, 300)}`);
+  }
+  return res.json();
+}
+
 /**
  * Send a plain-text WhatsApp message to a customer.
  * @param {string} to    recipient phone in international format, digits only (e.g. "905551112233")
@@ -24,28 +42,35 @@ async function sendMessage(to, text) {
     mocks.state.sentWhatsapp.push({ to, text });
     return { mocked: true };
   }
-
-  const url = `https://graph.facebook.com/${GRAPH_VERSION}/${env.whatsappPhoneNumberId}/messages`;
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${env.whatsappToken}`,
-    },
-    body: JSON.stringify({
-      messaging_product: 'whatsapp',
-      to,
-      type: 'text',
-      text: { body: text },
-    }),
-    signal: AbortSignal.timeout(SEND_TIMEOUT_MS),
-  });
-
-  if (!res.ok) {
-    const body = await res.text().catch(() => '');
-    throw new Error(`WhatsApp send failed ${res.status}: ${body.slice(0, 300)}`);
-  }
-  return res.json();
+  return post({ to, type: 'text', text: { body: text } });
 }
 
-module.exports = { sendMessage };
+/**
+ * Send an interactive reply-button message (max 3 buttons, titles max
+ * 20 chars — WhatsApp platform limits). Used for the clarification menu.
+ * @param {string} to
+ * @param {string} bodyText
+ * @param {Array<{id: string, title: string}>} buttons
+ */
+async function sendButtons(to, bodyText, buttons) {
+  if (env.mockMode) {
+    mocks.state.sentWhatsapp.push({ to, text: bodyText, buttons });
+    return { mocked: true };
+  }
+  return post({
+    to,
+    type: 'interactive',
+    interactive: {
+      type: 'button',
+      body: { text: bodyText },
+      action: {
+        buttons: buttons.slice(0, 3).map((b) => ({
+          type: 'reply',
+          reply: { id: b.id, title: b.title.slice(0, 20) },
+        })),
+      },
+    },
+  });
+}
+
+module.exports = { sendMessage, sendButtons };

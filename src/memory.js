@@ -16,17 +16,37 @@
 const MAX_TURNS = 20;                    // messages kept per customer (user+assistant combined)
 const SESSION_TTL_MS = 12 * 60 * 60 * 1000; // forget conversations idle for 12h
 
-const sessions = new Map(); // phone -> { history: [{role, content}], lastSeen, mutedUntil }
+const sessions = new Map(); // phone -> { history: [{role, content}], lastSeen, mutedUntil, hydrated }
 
 function getSession(phone) {
   let s = sessions.get(phone);
   const now = Date.now();
   if (!s || now - s.lastSeen > SESSION_TTL_MS) {
-    s = { history: [], lastSeen: now, mutedUntil: 0 };
+    s = { history: [], lastSeen: now, mutedUntil: 0, hydrated: false };
     sessions.set(phone, s);
   }
   s.lastSeen = now;
   return s;
+}
+
+/**
+ * Restart resilience: true when this session has never been seeded from
+ * the database (fresh process or expired session). The handler then
+ * loads the customer's recent rows from Supabase and calls hydrate().
+ */
+function needsHydration(phone) {
+  return !getSession(phone).hydrated;
+}
+
+/** Seed a fresh session with history/mute state recovered from the DB. */
+function hydrate(phone, { history = [], mutedUntil = 0 } = {}) {
+  const s = getSession(phone);
+  if (s.hydrated) return;
+  if (s.history.length === 0 && history.length > 0) {
+    s.history.push(...history.slice(-MAX_TURNS));
+  }
+  if (mutedUntil > s.mutedUntil) s.mutedUntil = mutedUntil;
+  s.hydrated = true;
 }
 
 /** Conversation history for the AI, scoped to this phone number only. */
@@ -57,4 +77,4 @@ function resetAll() {
   sessions.clear();
 }
 
-module.exports = { getHistory, addMessage, mute, isMuted, resetAll };
+module.exports = { getHistory, addMessage, mute, isMuted, needsHydration, hydrate, resetAll };

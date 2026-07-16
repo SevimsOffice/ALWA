@@ -24,14 +24,40 @@ Meta WhatsApp Cloud API ──webhook──▶ ALWA (Node/Express server)
 
 | Path | What it is | You edit it? |
 |---|---|---|
-| `faq.md` | Everything the AI knows. Edit on GitHub to update answers. | **Yes — often** |
-| `config/system-prompt.md` | The AI's personality & rules | Yes |
+| `faq.md` | Everything the AI knows. Edit on GitHub to update answers. Also served at `GET /faq` so your ManyChat/Instagram flow can use the same source. | **Yes — often** |
+| `config/system-prompt.md` | The AI's personality & rules (business-neutral; company facts live in faq.md) | Yes |
+| `config/intents.json` | The intent categories the AI classifies every message into + confidence threshold | Yes |
+| `config/buttons.json` | The clarification button menu + survey thank-you text | Yes |
+| `config/sla.json` | Complaint response-time promise + confirmation message | Yes |
 | `config/handover-keywords.json` | Words that mean "I want a human" | Yes |
 | `config/negative-keywords.json` | Words that politely end the conversation | Yes |
 | `config/recipients.json` | Who gets email/Telegram/WhatsApp alerts | **Yes** |
+| `supabase/schema.sql` | Database tables (paste once into Supabase SQL Editor) | Run once |
 | `apps-script/` | The free email-sending script + its setup guide | Deploy once |
 | `src/` | The server code | No (unless developing) |
 | `.env.example` | Every secret/credential you need to provide | Copy to `.env` |
+
+## How a message is routed (v2 architecture)
+
+Every message enters through the same webhook and is routed in software:
+
+1. **Identity (Layer 1):** the phone number is looked up in the Supabase
+   `students` table. Known number → support mode; unknown → sales mode.
+   Survey button replies split off here (by template context ID) and
+   never touch the sales flow.
+2. **Intent (Layer 2):** keyword pre-filter (hostile/stop messages,
+   explicit "temsilci" requests), then ONE OpenAI call returns both the
+   reply and a per-message intent label (`kurs_bilgisi / fiyat / sikayet
+   / oneri / insan / diger`) with a confidence score. A complaint in the
+   middle of a sales chat is caught, because intent is per message. Low
+   confidence → a 3-button clarification menu instead of a guess.
+3. **Action (Layer 3):** sales/info → AI reply (+ a `leads` row on
+   handover); complaint → `complaints` row with a deadline + staff
+   alert + "your complaint is recorded, we'll reply within X hours"
+   confirmation (overdue complaints trigger reminder emails); human
+   request → staff handover alert. Everything lands in `conversations`
+   (+ the Google Sheets mirror), which feeds `GET /report?month=YYYY-MM`
+   and the automatic monthly report email.
 
 Key design decisions and honest completion status: see
 [`BUILD_SUMMARY.md`](BUILD_SUMMARY.md).
@@ -144,6 +170,33 @@ The sheet is your conversation log and error dashboard.
 
 ➡ `.env`: `GOOGLE_SHEET_ID=`, `GOOGLE_SERVICE_ACCOUNT_EMAIL=`, `GOOGLE_PRIVATE_KEY=`
 
+## 3b. Supabase — database for identity, complaints, leads (~10 min)
+
+Optional but strongly recommended: without it the bot still works
+(Sheets-only), but you lose the student lookup, complaint records,
+leads, surveys, reports, and restart-proof memory.
+
+1. Go to <https://supabase.com> → sign in with GitHub → **New project**
+   (free tier is plenty). Pick any name/region, set a database password
+   (you won't need it day-to-day).
+2. In the left sidebar open **SQL Editor** → **New query** → paste the
+   ENTIRE contents of `supabase/schema.sql` from this repo → **Run**.
+   This creates the `students`, `conversations`, `leads`, `complaints`
+   and `survey_responses` tables.
+3. **Project Settings → API**: copy
+   - **Project URL** → `SUPABASE_URL`
+   - **service_role key** (under "Project API keys" — NOT the anon key)
+     → `SUPABASE_SERVICE_ROLE_KEY`
+4. Load your existing student/customer list: **Table Editor →
+   students → Insert → Import data from CSV**. The `phone` column must
+   be international format, digits only (e.g. `905551112233`).
+5. Day-to-day: complaints are managed in **Table Editor → complaints**
+   — when a complaint is handled, change its `status` to `resolved`.
+   Leads appear in the `leads` table.
+
+➡ `.env`: `SUPABASE_URL=`, `SUPABASE_SERVICE_ROLE_KEY=`
+➡ `.env`: `REPORT_SECRET=` (any random string — protects `GET /report`)
+
 ## 4. Email alerts — Google Apps Script (~5 min)
 
 Follow **[`apps-script/README.md`](apps-script/README.md)** — copy one
@@ -225,17 +278,24 @@ on GitHub updates the bot's knowledge within a couple of minutes.
   column by a phone number to read one customer's whole thread.
 - **See failures** → `errors` tab (timestamp, phone, step, message,
   severity). Critical failures also email you.
+- **Handle a complaint** → Supabase → Table Editor → `complaints` →
+  set `status` to `resolved`. Unresolved past-deadline complaints
+  trigger reminder emails automatically.
+- **See/export leads** → Supabase `leads` table.
+- **Monthly numbers** → `https://YOUR-URL/report?month=2026-07&secret=REPORT_SECRET`,
+  and the same report is emailed automatically on the 1st of each month.
+- **Point ManyChat at the same answers** → fetch `https://YOUR-URL/faq`.
 
 ## Behavior notes & limitations
 
-- **Conversation memory** lives in server memory (per phone number,
-  last 20 messages, 12h idle timeout). A redeploy/restart clears it —
-  the bot won't remember mid-conversation context across restarts, but
-  the permanent record is always in the Sheet. No database to maintain.
+- **Conversation memory** is per phone number (last 20 messages, 12h
+  idle timeout), cached in RAM. With Supabase configured, a restart
+  re-seeds each conversation (and mute state) from the `conversations`
+  table on the customer's next message; without Supabase, restarts
+  clear short-term memory (the permanent record is still in the Sheet).
 - **Muting**: after a hostile/"stop" message the bot sends one polite
   goodbye and ignores that number for 72h (configurable in
-  `negative-keywords.json`). Messages are still logged. A restart also
-  clears mutes (in-memory).
+  `negative-keywords.json`). Messages are still logged.
 - **24-hour window**: WhatsApp only lets businesses send free-form
   replies within 24h of the customer's last message. ALWA only ever
   replies to incoming messages, so this is automatically satisfied.

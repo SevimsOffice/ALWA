@@ -1,0 +1,10 @@
+{
+  "_comment": "EDIT THIS FILE to change the clarification button menu (sent when the AI isn't sure what the customer wants) and the survey thank-you message. WhatsApp allows AT MOST 3 buttons; titles max 20 characters. Button ids MUST start with 'menu:' followed by an intent id from intents.json.",
+  "menuBody": "Size nasıl yardımcı olabilirim? Aşağıdan seçebilirsiniz 🙂",
+  "buttons": [
+    { "id": "menu:kurs_bilgisi", "title": "📚 Eğitim bilgisi" },
+    { "id": "menu:sikayet", "title": "📝 Şikayet / öneri" },
+    { "id": "menu:diger", "title": "💬 Diğer" }
+  ],
+  "surveyThanks": "Teşekkürler, cevabınızı kaydettik! 🙏"
+}

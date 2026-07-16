@@ -13,6 +13,7 @@
     { "match": "danismanla gorusmek", "topic": "sales" },
     { "match": "yetkiliyle gorusmek", "topic": "sales" },
     { "match": "gercek biri", "topic": "sales" },
+    { "match": "temsilci", "topic": "sales" },
     { "match": "insanla konusmak", "topic": "sales" },
     { "match": "enroll", "topic": "sales" },
     { "match": "register", "topic": "sales" },

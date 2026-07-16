@@ -1,0 +1,6 @@
+{
+  "_comment": "EDIT THIS FILE to change complaint handling. 'complaintResponseHours' is the promised response time — it fills {hours} in the confirmation message and sets the deadline on the complaint record. Overdue open complaints trigger a reminder email; 'reminderCheckMinutes' is how often the server checks for them.",
+  "complaintResponseHours": 24,
+  "confirmationMessage": "Geri bildiriminiz için teşekkürler, kaydınızı oluşturdum ✅ En geç {hours} saat içinde yetkili arkadaşımız size dönüş yapacak.",
+  "reminderCheckMinutes": 60
+}

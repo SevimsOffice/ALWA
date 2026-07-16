@@ -1,7 +1,45 @@
 # BUILD_SUMMARY — what was built, what's left for you
 
-_Build date: 2026-07-07. Everything below was built and tested
-autonomously in mock mode; nothing has touched a live API yet._
+_v1 build: 2026-07-07 · v2 (router architecture) build: 2026-07-16.
+Everything below was built and tested autonomously in mock mode._
+
+## 🆕 v2 — the three-layer router (2026-07-16)
+
+Implements the requested architecture: one number, one webhook, routing
+in software. All 24 tests pass (12 v1 + 12 v2).
+
+- **Layer 1 — Identity** (`src/db.js`): incoming phone looked up in the
+  Supabase `students` table → support mode for registered
+  students/parents, sales mode for unknown numbers. Survey button
+  replies split off by template context ID before any sales logic.
+- **Layer 2 — Intent per message** (`src/ai.js`): ONE OpenAI structured-
+  output call returns `{reply, intent, confidence, wants_human}` —
+  no extra classifier cost. Categories editable in `config/intents.json`.
+  Free-form complaints mid-sales-chat are caught (tested). Keyword lists
+  remain as the negative/stop pre-filter and handover fast-path.
+  Low confidence → 3-button clarification menu (`config/buttons.json`),
+  and `whatsapp.js`/webhook now send & parse interactive buttons.
+- **Layer 3 — Actions**: complaint → `complaints` row with deadline
+  (`config/sla.json`) + staff alert + SLA confirmation to the customer +
+  hourly overdue-reminder job (`src/complaints.js`); sales handover →
+  `leads` row + staff alert; everything → `conversations` table with the
+  Google Sheets tab kept as a human-readable mirror.
+- **Extras**: `GET /faq` (ManyChat shares the same knowledge file),
+  `GET /report?month=YYYY-MM&secret=…` + automatic monthly report email,
+  restart-proof memory & mute state (re-seeded from Supabase),
+  `supabase/schema.sql` one-paste setup, business-neutral system prompt
+  (company facts now live only in `faq.md`).
+- **Graceful degradation**: without Supabase env vars the bot runs
+  exactly like v1 (Sheets-only) — deploy order doesn't matter.
+- **Your new manual steps**: create the Supabase project, run
+  `supabase/schema.sql`, set `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY`
+  (+ `REPORT_SECRET`) on Railway, import your student list as CSV
+  (README §3b). Survey SENDING still needs an approved Meta template —
+  inbound survey answers are already handled.
+
+---
+
+# v1 summary (original build)
 
 ## ✅ Code-complete and verified (via automated tests + mock run)
 
