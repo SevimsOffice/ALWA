@@ -6,18 +6,28 @@ natural, human tone, logs every message to a Google Sheet, detects when
 someone wants to enroll or talk to a human and alerts staff, and tracks
 every error step-by-step.
 
+📍 **Visual system map:** open `docs/architecture.html` — every service,
+every connection, and the full message flow on one page (in Turkish).
+
 ```
-Customer on WhatsApp
-        │
-        ▼
-Meta WhatsApp Cloud API ──webhook──▶ ALWA (Node/Express server)
+Customer on WhatsApp                        Instagram (ManyChat, optional)
+        │                                            │ GET /faq
+        ▼                                            ▼
+Meta WhatsApp Cloud API ──webhook──▶ ALWA (Node/Express on Railway)
+                                        │
+                    ┌───────────────────┼───────────────────┐
+                    ▼                   ▼                   ▼
+              LAYER 1 identity    LAYER 2 intent      LAYER 3 action
+             (Supabase students) (OpenAI: reply +    (sales / complaint /
+                                  intent + confidence) handover / survey)
                                         │
         ┌───────────────┬───────────────┼─────────────────┐
         ▼               ▼               ▼                 ▼
-     OpenAI        Google Sheet     Apps Script      Telegram/CallMeBot
-  (answers from   (messages tab +  (email alerts:      (optional extra
-   faq.md, per-    errors tab)      handover+errors)     alert channel)
-   phone memory)
+     Supabase       Google Sheet    Apps Script      Telegram/CallMeBot
+  (conversations,  (human-readable  (email alerts:     (optional extra
+   leads,           mirror:          complaints, SLA,   alert channels)
+   complaints,      messages +       handover, errors,
+   surveys)         errors tabs)     monthly report)
 ```
 
 ## What's in the box

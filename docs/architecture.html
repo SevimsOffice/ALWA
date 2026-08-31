@@ -1,0 +1,811 @@
+<title>ALWA Sistem Haritası</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+
+<style>
+  :root {
+    --bg:        #F1F4F0;
+    --surface:   #FFFFFF;
+    --surface-2: #E7EBE5;
+    --tint:      #E2EFE7;
+    --ink:       #121A15;
+    --muted:     #5B6862;
+    --line:      #D2D9D1;
+    --line-strong:#9AA79F;
+    --signal:    #14713F;
+    --ai:        #3A4FA0;
+    --warn:      #9A6209;
+    --alert:     #AC3C2E;
+    --shadow:    0 1px 2px rgba(18,26,21,.05), 0 8px 24px -16px rgba(18,26,21,.18);
+    --display: "Bricolage Grotesque", "Trebuchet MS", sans-serif;
+    --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:        #0C1310;
+      --surface:   #141D19;
+      --surface-2: #1B2621;
+      --tint:      #163023;
+      --ink:       #E4EBE6;
+      --muted:     #93A199;
+      --line:      #27332E;
+      --line-strong:#586A61;
+      --signal:    #45C98D;
+      --ai:        #8AA0EA;
+      --warn:      #E0A445;
+      --alert:     #EF806E;
+      --shadow:    0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg:        #0C1310;
+    --surface:   #141D19;
+    --surface-2: #1B2621;
+    --tint:      #163023;
+    --ink:       #E4EBE6;
+    --muted:     #93A199;
+    --line:      #27332E;
+    --line-strong:#586A61;
+    --signal:    #45C98D;
+    --ai:        #8AA0EA;
+    --warn:      #E0A445;
+    --alert:     #EF806E;
+    --shadow:    0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px 96px; }
+  .prose { max-width: 68ch; }
+
+  /* ---------- header ---------- */
+  header { padding: 72px 0 40px; }
+  .eyebrow {
+    font-family: var(--mono); font-size: 12px; letter-spacing: .16em;
+    text-transform: uppercase; color: var(--signal); margin: 0 0 18px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .eyebrow::after { content: ""; height: 1px; flex: 1; background: var(--line); max-width: 180px; }
+  h1 {
+    font-family: var(--display); font-weight: 800; font-size: clamp(2.3rem, 5.5vw, 3.7rem);
+    line-height: 1.02; letter-spacing: -.025em; margin: 0 0 20px; text-wrap: balance;
+  }
+  .lede { font-size: 1.14rem; color: var(--muted); max-width: 60ch; margin: 0; }
+
+  .facts {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1px; background: var(--line); border: 1px solid var(--line);
+    border-radius: 14px; overflow: hidden; margin-top: 44px;
+  }
+  .fact { background: var(--surface); padding: 18px 20px; }
+  .fact b {
+    display: block; font-family: var(--display); font-weight: 800;
+    font-size: 2rem; line-height: 1; letter-spacing: -.02em; font-variant-numeric: tabular-nums;
+  }
+  .fact span { display: block; margin-top: 8px; font-size: 13.5px; color: var(--muted); }
+
+  /* ---------- sections ---------- */
+  section { padding-top: 72px; }
+  .sec-label {
+    font-family: var(--mono); font-size: 11.5px; letter-spacing: .18em;
+    text-transform: uppercase; color: var(--muted); margin: 0 0 10px;
+  }
+  h2 {
+    font-family: var(--display); font-weight: 600; font-size: clamp(1.5rem, 3vw, 2rem);
+    line-height: 1.15; letter-spacing: -.018em; margin: 0 0 12px; text-wrap: balance;
+  }
+  h2 + p { margin: 0 0 28px; color: var(--muted); }
+
+  /* ---------- figures ---------- */
+  figure { margin: 0; }
+  .canvas {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
+    box-shadow: var(--shadow); padding: 8px; overflow-x: auto;
+  }
+  .diagram { display: block; width: 100%; min-width: 720px; height: auto; color: var(--line-strong); }
+  figcaption {
+    margin-top: 14px; font-size: 14px; color: var(--muted); max-width: 72ch;
+  }
+  .scroll-hint { display: none; font-family: var(--mono); font-size: 11px; color: var(--muted); margin: 0 0 8px; }
+  @media (max-width: 820px) { .scroll-hint { display: block; } }
+
+  /* svg node styling */
+  .n rect, .n circle { fill: var(--surface); stroke: var(--line-strong); stroke-width: 1.4; }
+  .n .title { font-family: var(--body); font-size: 14px; font-weight: 600; fill: var(--ink); }
+  .n .sub   { font-family: var(--body); font-size: 11.5px; fill: var(--muted); }
+  .n .mono  { font-family: var(--mono); font-size: 11px; fill: var(--muted); }
+  .hub rect { fill: var(--tint); stroke: var(--signal); stroke-width: 2; }
+  .hub .title { font-size: 16px; font-weight: 600; }
+  .band rect { fill: var(--surface-2); stroke: none; }
+  .edge { fill: none; stroke: var(--line-strong); stroke-width: 1.5; }
+  .edge.dash { stroke-dasharray: 5 4; }
+  .elabel { font-family: var(--mono); font-size: 10.5px; fill: var(--muted); }
+  .layer-tag { font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; fill: var(--signal); }
+  .t-sales { fill: var(--signal); } .t-alert { fill: var(--alert); }
+  .t-warn  { fill: var(--warn); }   .t-ai    { fill: var(--ai); }
+  .yes { font-family: var(--mono); font-size: 10.5px; fill: var(--muted); }
+
+  /* ---------- service cards ---------- */
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+    padding: 20px; display: flex; flex-direction: column; gap: 12px;
+  }
+  .card-head { display: flex; align-items: center; gap: 12px; }
+  .badge {
+    width: 44px; height: 44px; border-radius: 12px; background: var(--surface-2);
+    display: grid; place-items: center; flex: none;
+  }
+  .card h3 { font-family: var(--display); font-weight: 600; font-size: 1.05rem; margin: 0; letter-spacing: -.01em; }
+  .card h3 small { display: block; font-family: var(--mono); font-size: 10.5px; font-weight: 400; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; margin-top: 3px; }
+  .card p { margin: 0; font-size: 14.5px; color: var(--muted); flex: 1; }
+  .meta { border-top: 1px solid var(--line); padding-top: 12px; display: grid; gap: 6px; }
+  .meta div { display: grid; grid-template-columns: 84px 1fr; gap: 10px; font-size: 12.5px; }
+  .meta dt, .meta .k { font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); padding-top: 2px; }
+  .meta .v { color: var(--ink); }
+  .opt { font-family: var(--mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase;
+         color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 2px 8px; }
+
+  /* ---------- tables ---------- */
+  .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; min-width: 560px; }
+  th, td { text-align: left; padding: 13px 18px; border-bottom: 1px solid var(--line); font-size: 14.5px; vertical-align: top; }
+  thead th { font-family: var(--mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-weight: 400; }
+  tbody tr:last-child td { border-bottom: none; }
+  td code, .m { font-family: var(--mono); font-size: 13px; color: var(--signal); }
+  td .who { color: var(--muted); }
+
+  /* ---------- journey ---------- */
+  .journey { display: grid; gap: 0; counter-reset: step; max-width: 76ch; }
+  .step {
+    display: grid; grid-template-columns: 40px 1fr; gap: 18px; padding: 16px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .step:last-child { border-bottom: none; }
+  .step .num {
+    font-family: var(--mono); font-size: 12px; color: var(--muted);
+    font-variant-numeric: tabular-nums; padding-top: 3px;
+  }
+  .step b { font-weight: 600; }
+  .step p { margin: 4px 0 0; font-size: 14.5px; color: var(--muted); }
+
+  /* ---------- footer ---------- */
+  footer {
+    margin-top: 88px; padding-top: 24px; border-top: 1px solid var(--line);
+    font-family: var(--mono); font-size: 12px; color: var(--muted);
+    display: flex; flex-wrap: wrap; gap: 8px 28px;
+  }
+  a { color: var(--signal); }
+  :focus-visible { outline: 2px solid var(--signal); outline-offset: 3px; border-radius: 4px; }
+</style>
+
+<!-- ===== servis sembolleri (sprite) ===== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="ic-wa" viewBox="0 0 32 32">
+      <circle cx="16" cy="16" r="15" fill="#25D366"/>
+      <path d="M11.3 8.8c.6 0 1 .35 1.2.9l.85 2.1c.2.5.03 1.05-.4 1.35l-.9.62c.9 1.85 2.4 3.35 4.25 4.25l.62-.9c.3-.43.85-.6 1.35-.4l2.1.85c.55.22.9.6.9 1.2v2.2c0 .72-.6 1.3-1.3 1.22C13.7 21.4 10.1 17.8 8.9 10.1c-.08-.7.5-1.3 1.22-1.3z" fill="#fff"/>
+    </symbol>
+    <symbol id="ic-ai" viewBox="0 0 32 32">
+      <path d="M16 3l11.3 6.5v13L16 29 4.7 22.5v-13z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>
+      <circle cx="16" cy="16" r="3.3" fill="currentColor"/>
+      <path d="M16 12.7V7.2M16 19.3v5.5M19 14.3l4.7-2.7M12.9 17.8l-4.6 2.6M19 17.8l4.7 2.6M12.9 14.3L8.3 11.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="ic-supabase" viewBox="0 0 32 32">
+      <path d="M17.4 2.6 6.2 16.4c-.7.9-.1 2.2 1 2.2h7.3v10.6c0 1.2 1.5 1.7 2.2.8l11.2-13.8c.7-.9.1-2.2-1-2.2h-7.3V3.4c0-1.2-1.5-1.7-2.2-.8z" fill="#3ECF8E"/>
+    </symbol>
+    <symbol id="ic-sheets" viewBox="0 0 32 32">
+      <path d="M7 3h11l7 7v19H7z" fill="#0F9D58"/>
+      <path d="M18 3l7 7h-7z" fill="#0B7C46"/>
+      <rect x="11" y="14" width="10" height="9" fill="#fff"/>
+      <path d="M11 17.5h10M11 20.5h10M15.3 14v9" stroke="#0F9D58" stroke-width="1.1"/>
+    </symbol>
+    <symbol id="ic-gmail" viewBox="0 0 32 32">
+      <rect x="3" y="7" width="26" height="18" rx="2.5" fill="#EA4335"/>
+      <path d="M3.5 8.5 16 18 28.5 8.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="ic-telegram" viewBox="0 0 32 32">
+      <circle cx="16" cy="16" r="15" fill="#229ED9"/>
+      <path d="M8 16.2 24 9.5l-3 14-5.4-4.1-2.2 3-.6-4.6z" fill="#fff"/>
+      <path d="M12.8 17.8 24 9.5l-9.2 10.3" fill="none" stroke="#229ED9" stroke-width=".9"/>
+    </symbol>
+    <symbol id="ic-phone" viewBox="0 0 32 32">
+      <rect x="9" y="3" width="14" height="26" rx="3" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M13.5 25.5h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      <path d="M16 9.5a4 4 0 0 1 4 4v3l1 1.5h-10l1-1.5v-3a4 4 0 0 1 4-4z" fill="currentColor"/>
+    </symbol>
+    <symbol id="ic-railway" viewBox="0 0 32 32">
+      <rect x="3" y="8" width="26" height="3.4" rx="1.7" fill="currentColor"/>
+      <rect x="3" y="14.3" width="26" height="3.4" rx="1.7" fill="currentColor" opacity=".75"/>
+      <rect x="3" y="20.6" width="18" height="3.4" rx="1.7" fill="currentColor" opacity=".5"/>
+    </symbol>
+    <symbol id="ic-github" viewBox="0 0 32 32">
+      <circle cx="9" cy="8" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/>
+      <circle cx="9" cy="25" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/>
+      <circle cx="23" cy="8" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M9 11.2v10.6M23 11.2v3c0 3.2-2.6 5.8-5.8 5.8h-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="ic-instagram" viewBox="0 0 32 32">
+      <rect x="3.5" y="3.5" width="25" height="25" rx="7.5" fill="none" stroke="#C13584" stroke-width="2.4"/>
+      <circle cx="16" cy="16" r="5.6" fill="none" stroke="#C13584" stroke-width="2.4"/>
+      <circle cx="23.2" cy="8.8" r="1.7" fill="#C13584"/>
+    </symbol>
+    <symbol id="ic-script" viewBox="0 0 32 32">
+      <rect x="4" y="4" width="24" height="24" rx="5" fill="#4285F4"/>
+      <path d="M13.5 11 9 16l4.5 5M18.5 11l4.5 5-4.5 5" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">AIandTECH · WhatsApp yapay zeka ajanı</p>
+    <h1>ALWA Sistem Haritası</h1>
+    <p class="lede">
+      Tek bir WhatsApp numarası, arkasında on servis. Bu sayfa hangi parçanın
+      ne iş yaptığını, kimin kime bağlı olduğunu ve bir mesajın sistemin
+      içinden nasıl geçtiğini gösterir.
+    </p>
+
+    <div class="facts">
+      <div class="fact"><b>1</b><span>WhatsApp numarası — tüm akışlar aynı hattan geçer</span></div>
+      <div class="fact"><b>3</b><span>yönlendirme katmanı: kimlik, niyet, aksiyon</span></div>
+      <div class="fact"><b>5</b><span>veri tablosu — öğrenciler, konuşmalar, lead, şikayet, anket</span></div>
+      <div class="fact"><b>10</b><span>bağlı servis, 4'ü opsiyonel</span></div>
+    </div>
+  </header>
+
+  <!-- =========== FIGURE 1: BAĞLANTI HARİTASI =========== -->
+  <section id="harita">
+    <p class="sec-label">harita</p>
+    <h2>Ne, neye bağlı?</h2>
+    <p class="prose">
+      Ortadaki sunucu her şeyin buluştuğu yer. Müşteri soldan girer, cevabı
+      yine soldan alır; sunucu bu arada modele danışır, veriyi sağa yazar,
+      gerekirse aşağıdaki kanallardan personeli uyarır.
+    </p>
+
+    <figure>
+      <p class="scroll-hint">← şemayı yana kaydırarak tamamını görebilirsiniz →</p>
+      <div class="canvas">
+        <svg class="diagram" viewBox="0 0 1000 650" role="img"
+             aria-label="ALWA sunucusu merkezde; solda WhatsApp ve Instagram girişleri, üstte OpenAI, sağda Supabase ve Google Sheets, altta e-posta, Telegram ve WhatsApp uyarı kanalları.">
+          <defs>
+            <marker id="a-map" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <polygon points="0,1.5 9,5 0,8.5" fill="currentColor"/>
+            </marker>
+          </defs>
+
+          <!-- GitHub -->
+          <g class="n">
+            <rect x="30" y="34" width="196" height="74" rx="12"/>
+            <use href="#ic-github" x="48" y="54" width="30" height="30" style="color:var(--ink)"/>
+            <text class="title" x="88" y="66">GitHub</text>
+            <text class="sub" x="88" y="85">kod + ayar dosyaları</text>
+          </g>
+          <path class="edge" d="M128 108 L128 150 Q128 162 142 168 L378 262" marker-end="url(#a-map)"/>
+          <text class="elabel" x="150" y="146">push → otomatik yayın</text>
+
+          <!-- OpenAI -->
+          <g class="n">
+            <rect x="396" y="30" width="212" height="80" rx="12"/>
+            <use href="#ic-ai" x="416" y="54" width="32" height="32" style="color:var(--ai)"/>
+            <text class="title" x="458" y="64">OpenAI</text>
+            <text class="sub" x="458" y="83">cevabı yazar, niyeti etiketler</text>
+          </g>
+          <path class="edge" d="M470 250 L470 112" marker-end="url(#a-map)"/>
+          <text class="elabel" x="462" y="185" text-anchor="end">soru + FAQ</text>
+          <path class="edge" d="M534 112 L534 250" marker-end="url(#a-map)"/>
+          <text class="elabel" x="542" y="185">cevap + niyet + güven</text>
+
+          <!-- WhatsApp -->
+          <g class="n">
+            <rect x="30" y="228" width="204" height="92" rx="12"/>
+            <use href="#ic-wa" x="50" y="256" width="34" height="34"/>
+            <text class="title" x="94" y="264">WhatsApp</text>
+            <text class="sub" x="94" y="283">Meta Cloud API</text>
+            <text class="sub" x="94" y="300">müşterinin yazdığı yer</text>
+          </g>
+          <path class="edge" d="M234 258 L376 268" marker-end="url(#a-map)"/>
+          <text class="elabel" x="248" y="250">gelen mesaj</text>
+          <path class="edge" d="M376 336 L234 306" marker-end="url(#a-map)"/>
+          <text class="elabel" x="248" y="332">cevap · buton · anket</text>
+
+          <!-- Instagram / ManyChat -->
+          <g class="n">
+            <rect x="30" y="386" width="204" height="80" rx="12"/>
+            <use href="#ic-instagram" x="50" y="410" width="32" height="32"/>
+            <text class="title" x="92" y="420">Instagram</text>
+            <text class="sub" x="92" y="438">ManyChat akışı</text>
+            <text class="mono" x="92" y="455">opsiyonel</text>
+          </g>
+          <path class="edge dash" d="M234 414 L378 380" marker-end="url(#a-map)"/>
+          <text class="elabel" x="250" y="404">GET /faq · aynı bilgi</text>
+
+          <!-- HUB -->
+          <g class="n hub">
+            <rect x="378" y="250" width="240" height="140" rx="16"/>
+            <use href="#ic-railway" x="398" y="272" width="28" height="28" style="color:var(--signal)"/>
+            <text class="layer-tag" x="436" y="286">RAILWAY · 7/24 AÇIK</text>
+            <text class="title" x="398" y="322">ALWA sunucusu</text>
+            <text class="sub" x="398" y="342">Node.js · Express · src/index.js</text>
+            <text class="sub" x="398" y="362">3 katmanlı yönlendirici</text>
+            <text class="mono" x="398" y="379">kimlik → niyet → aksiyon</text>
+          </g>
+
+          <!-- Supabase -->
+          <g class="n">
+            <rect x="762" y="196" width="208" height="104" rx="12"/>
+            <use href="#ic-supabase" x="782" y="218" width="30" height="30"/>
+            <text class="title" x="822" y="230">Supabase</text>
+            <text class="sub" x="822" y="248">ana veritabanı</text>
+            <text class="mono" x="782" y="272">students · conversations</text>
+            <text class="mono" x="782" y="288">leads · complaints · anket</text>
+          </g>
+          <path class="edge" d="M618 292 L760 250" marker-end="url(#a-map)"/>
+          <text class="elabel" x="634" y="270">bu numara kayıtlı mı? · kayıt aç</text>
+
+          <!-- Sheets -->
+          <g class="n">
+            <rect x="762" y="330" width="208" height="88" rx="12"/>
+            <use href="#ic-sheets" x="782" y="352" width="28" height="28"/>
+            <text class="title" x="820" y="364">Google Sheets</text>
+            <text class="sub" x="820" y="382">insan-okur ayna</text>
+            <text class="mono" x="782" y="404">messages · errors</text>
+          </g>
+          <path class="edge" d="M618 352 L760 370" marker-end="url(#a-map)"/>
+          <text class="elabel" x="636" y="392">her mesajın kopyası</text>
+
+          <!-- alert channels -->
+          <g class="n band"><rect x="150" y="486" width="700" height="132" rx="14"/></g>
+          <text class="layer-tag" x="170" y="512">PERSONEL UYARI KANALLARI</text>
+
+          <g class="n">
+            <rect x="170" y="524" width="216" height="76" rx="12"/>
+            <use href="#ic-script" x="188" y="546" width="26" height="26"/>
+            <use href="#ic-gmail" x="220" y="548" width="26" height="22"/>
+            <text class="sub" x="188" y="590">Apps Script → Gmail</text>
+          </g>
+          <g class="n">
+            <rect x="404" y="524" width="180" height="76" rx="12"/>
+            <use href="#ic-telegram" x="422" y="546" width="26" height="26"/>
+            <text class="sub" x="422" y="590">Telegram · opsiyonel</text>
+          </g>
+          <g class="n">
+            <rect x="602" y="524" width="212" height="76" rx="12"/>
+            <use href="#ic-phone" x="620" y="546" width="24" height="26" style="color:var(--ink)"/>
+            <text class="sub" x="620" y="590">CallMeBot · opsiyonel</text>
+          </g>
+          <path class="edge" d="M440 392 L300 522" marker-end="url(#a-map)"/>
+          <text class="elabel" x="286" y="452">şikayet · devir · hata</text>
+          <path class="edge" d="M498 392 L494 522" marker-end="url(#a-map)"/>
+          <path class="edge" d="M560 392 L692 522" marker-end="url(#a-map)"/>
+        </svg>
+      </div>
+      <figcaption>
+        Kesiksiz oklar sürekli çalışan bağlantılar, kesikli ok opsiyonel
+        Instagram kolu. Supabase ya da Sheets kopsa bile bot cevap vermeye
+        devam eder; kopan tek şey kayıt tutmadır.
+      </figcaption>
+    </figure>
+  </section>
+
+  <!-- =========== FIGURE 2: AKIŞ =========== -->
+  <section id="akis">
+    <p class="sec-label">akış</p>
+    <h2>Bir mesaj geldiğinde ne oluyor?</h2>
+    <p class="prose">
+      Her mesaj aynı üç kapıdan geçer. Önemli olan şu: niyet <em>her mesajda
+      yeniden</em> ölçülür — fiyat konuşmasının ortasında gelen bir şikayet
+      anında yakalanır.
+    </p>
+
+    <figure>
+      <p class="scroll-hint">← şemayı yana kaydırarak tamamını görebilirsiniz →</p>
+      <div class="canvas">
+        <svg class="diagram" viewBox="0 0 900 980" role="img"
+             aria-label="Mesaj akışı: anket ve küfür kontrolünden sonra kimlik katmanı, niyet katmanı ve dört aksiyon kolu.">
+          <defs>
+            <marker id="a-flow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <polygon points="0,1.5 9,5 0,8.5" fill="currentColor"/>
+            </marker>
+          </defs>
+
+          <!-- start -->
+          <g class="n">
+            <rect x="160" y="16" width="340" height="52" rx="26"/>
+            <use href="#ic-wa" x="180" y="30" width="24" height="24"/>
+            <text class="title" x="214" y="47">Gelen WhatsApp mesajı</text>
+          </g>
+          <path class="edge" d="M330 68 L330 92" marker-end="url(#a-flow)"/>
+
+          <!-- D1 -->
+          <g class="n">
+            <rect x="160" y="92" width="340" height="52" rx="12"/>
+            <text class="title" x="180" y="115">Anket butonuna mı basıldı?</text>
+            <text class="sub" x="180" y="133">buton cevabı, template kimliğiyle gelir</text>
+          </g>
+          <path class="edge" d="M500 118 L556 118" marker-end="url(#a-flow)"/>
+          <text class="yes" x="512" y="110">evet</text>
+          <g class="n">
+            <rect x="560" y="92" width="310" height="52" rx="12"/>
+            <text class="sub" x="578" y="114">Anket cevabı kaydedilir, teşekkür gider.</text>
+            <text class="mono" x="578" y="132">satış akışına hiç girmez</text>
+          </g>
+          <path class="edge" d="M330 144 L330 172" marker-end="url(#a-flow)"/>
+
+          <!-- D2 -->
+          <g class="n">
+            <rect x="160" y="172" width="340" height="52" rx="12"/>
+            <text class="title" x="180" y="195">Küfür ya da “yazmayın” mı?</text>
+            <text class="sub" x="180" y="213">anahtar kelime listesi, yapay zekaya gitmeden</text>
+          </g>
+          <path class="edge" d="M500 198 L556 198" marker-end="url(#a-flow)"/>
+          <text class="yes" x="512" y="190">evet</text>
+          <g class="n">
+            <rect x="560" y="172" width="310" height="52" rx="12"/>
+            <text class="sub" x="578" y="194">Tek kibar kapanış mesajı,</text>
+            <text class="sub" x="578" y="212">sonra 72 saat sessizlik.</text>
+          </g>
+          <path class="edge" d="M330 224 L330 256" marker-end="url(#a-flow)"/>
+
+          <!-- LAYER 1 -->
+          <text class="layer-tag" x="160" y="250">KATMAN 1 · KİMLİK</text>
+          <g class="n">
+            <rect x="160" y="256" width="340" height="76" rx="12"/>
+            <text class="title" x="180" y="282">Numara students tablosunda mı?</text>
+            <text class="sub" x="180" y="302">Supabase'e tek sorgu, bir saniyeden kısa</text>
+            <text class="mono" x="180" y="320">src/db.js · findStudent()</text>
+          </g>
+          <path class="edge" d="M500 294 L556 294" marker-end="url(#a-flow)"/>
+          <g class="n">
+            <rect x="560" y="262" width="310" height="64" rx="12"/>
+            <use href="#ic-supabase" x="578" y="282" width="24" height="24"/>
+            <text class="sub" x="612" y="290">students</text>
+            <text class="mono" x="612" y="308">okulun kayıtlı numara listesi</text>
+          </g>
+          <path class="edge" d="M330 332 L330 356" marker-end="url(#a-flow)"/>
+
+          <g class="n">
+            <rect x="160" y="356" width="165" height="40" rx="10"/>
+            <text class="sub" x="176" y="381">kayıtlı → destek modu</text>
+          </g>
+          <g class="n">
+            <rect x="335" y="356" width="165" height="40" rx="10"/>
+            <text class="sub" x="351" y="381">yeni → satış modu</text>
+          </g>
+          <path class="edge" d="M330 396 L330 428" marker-end="url(#a-flow)"/>
+
+          <!-- LAYER 2 -->
+          <text class="layer-tag" x="160" y="422">KATMAN 2 · NİYET</text>
+          <g class="n">
+            <rect x="160" y="428" width="340" height="88" rx="12"/>
+            <text class="title" x="180" y="454">Tek OpenAI çağrısı</text>
+            <text class="sub" x="180" y="474">cevap + niyet + güven puanı birlikte döner</text>
+            <text class="mono t-ai" x="180" y="494">kurs · fiyat · şikayet · öneri · insan · diğer</text>
+            <text class="mono" x="180" y="510">src/ai.js</text>
+          </g>
+          <path class="edge" d="M500 458 L556 448" marker-end="url(#a-flow)"/>
+          <g class="n">
+            <rect x="560" y="414" width="310" height="56" rx="12"/>
+            <use href="#ic-ai" x="578" y="430" width="24" height="24" style="color:var(--ai)"/>
+            <text class="sub" x="612" y="440">OpenAI</text>
+            <text class="mono" x="612" y="457">bilgi tabanı: faq.md</text>
+          </g>
+          <path class="edge" d="M500 494 L556 508" marker-end="url(#a-flow)"/>
+          <g class="n">
+            <rect x="560" y="482" width="310" height="60" rx="12"/>
+            <text class="sub t-warn" x="578" y="504">Güven düşükse (&lt; 0,55)</text>
+            <text class="sub" x="578" y="524">3 butonlu menü gider, tahmin yürütülmez.</text>
+          </g>
+          <path class="edge" d="M330 516 L330 560" marker-end="url(#a-flow)"/>
+
+          <!-- LAYER 3 fan-out -->
+          <text class="layer-tag" x="160" y="556">KATMAN 3 · AKSİYON — NİYETE GÖRE</text>
+          <path class="edge" d="M330 566 L330 588 M122 588 L788 588 M122 588 L122 612 M347 588 L347 612 M572 588 L572 612 M788 588 L788 612"/>
+
+          <g class="n">
+            <rect x="20" y="612" width="205" height="132" rx="12"/>
+            <text class="title t-sales" x="38" y="638">Kurs · fiyat</text>
+            <text class="sub" x="38" y="662">Yapay zeka cevabı gider.</text>
+            <text class="sub" x="38" y="682">Fiyat sorulursa görüşmeye</text>
+            <text class="sub" x="38" y="700">yönlendirir.</text>
+            <text class="mono" x="38" y="726">kayıt: conversations</text>
+          </g>
+          <g class="n">
+            <rect x="245" y="612" width="205" height="132" rx="12"/>
+            <text class="title t-alert" x="263" y="638">Şikayet</text>
+            <text class="sub" x="263" y="662">Deadline'lı kayıt açılır.</text>
+            <text class="sub" x="263" y="682">Sorumluya e-posta gider.</text>
+            <text class="sub" x="263" y="700">Müşteriye söz verilir:</text>
+            <text class="mono t-alert" x="263" y="726">“24 saat içinde dönüş”</text>
+          </g>
+          <g class="n">
+            <rect x="470" y="612" width="205" height="132" rx="12"/>
+            <text class="title t-warn" x="488" y="638">İnsan istiyor</text>
+            <text class="sub" x="488" y="662">Kayıt / aranma talebi.</text>
+            <text class="sub" x="488" y="682">Personele devir uyarısı,</text>
+            <text class="sub" x="488" y="700">lead kaydı açılır.</text>
+            <text class="mono" x="488" y="726">kayıt: leads</text>
+          </g>
+          <g class="n">
+            <rect x="695" y="612" width="185" height="132" rx="12"/>
+            <text class="title" x="713" y="638">Diğer</text>
+            <text class="sub" x="713" y="662">Selam, teşekkür,</text>
+            <text class="sub" x="713" y="682">genel sorular.</text>
+            <text class="sub" x="713" y="700">Sadece cevap verilir.</text>
+          </g>
+
+          <!-- log band -->
+          <g class="n band"><rect x="20" y="782" width="860" height="66" rx="12"/></g>
+          <use href="#ic-supabase" x="44" y="802" width="24" height="24"/>
+          <use href="#ic-sheets" x="76" y="803" width="22" height="22"/>
+          <text class="title" x="116" y="812">Hangi kol olursa olsun: her mesaj kaydedilir</text>
+          <text class="sub" x="116" y="832">Supabase conversations + Google Sheets messages — aylık rapor buradan çıkar.</text>
+
+          <!-- timers -->
+          <g class="n">
+            <rect x="20" y="874" width="425" height="82" rx="12"/>
+            <text class="layer-tag" x="40" y="900">SAATLİK KONTROL</text>
+            <text class="sub" x="40" y="922">Süresi dolmuş açık şikayet varsa</text>
+            <text class="sub" x="40" y="940">sorumluya hatırlatma e-postası gider.</text>
+          </g>
+          <g class="n">
+            <rect x="455" y="874" width="425" height="82" rx="12"/>
+            <text class="layer-tag" x="475" y="900">HER AYIN 1'İ</text>
+            <text class="sub" x="475" y="922">Aylık rapor e-postayla gelir:</text>
+            <text class="sub" x="475" y="940">kaç satış sorusu, kaç şikayet, kaç devir.</text>
+          </g>
+        </svg>
+      </div>
+      <figcaption>
+        Sağa çıkan oklar akışı sonlandıran kollardır: anket cevabı, kibar
+        kapanış ve buton menüsü satış/şikayet mantığına hiç girmez.
+      </figcaption>
+    </figure>
+  </section>
+
+  <!-- =========== SERVİSLER =========== -->
+  <section id="servisler">
+    <p class="sec-label">servisler</p>
+    <h2>Hangi uygulama ne işe yarıyor?</h2>
+    <p class="prose">
+      Her kartta o servisin görevi ve — asıl önemlisi — durduğunda ne
+      olacağı yazıyor. Sistem bilerek böyle kurgulandı: hiçbir servisin
+      çökmesi botu tamamen susturmaz.
+    </p>
+
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-head">
+          <span class="badge"><svg width="26" height="26"><use href="#ic-wa" width="26" height="26"/></svg></span>
+          <h3>WhatsApp Business<small>Meta Cloud API</small></h3>
+        </div>
+        <p>Müşterinin yazdığı yer. Mesajlar webhook ile sunucuya düşer, cevaplar buradan geri gider. Butonlu menüler ve anketler de bu kanaldan.</p>
+        <div class="meta">
+          <div><span class="k">Maliyet</span><span class="v">Meta'nın konuşma tarifesi</span></div>
+          <div><span class="k">Durursa</span><span class="v">Hiç mesaj alınamaz, cevap gönderilemez — tek kritik bağımlılık.</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="badge"><svg width="26" height="26" style="color:var(--ai)"><use href="#ic-ai" width="26" height="26"/></svg></span>
+          <h3>OpenAI<small>dil modeli</small></h3>
+        </div>
+        <p>Cevabı yazar ve aynı çağrıda mesajın niyetini etiketleyip güven puanı verir. Sadece <code class="m">faq.md</code> içindeki bilgiden konuşur.</p>
+        <div class="meta">
+          <div><span class="k">Maliyet</span><span class="v">Kullanım başına, mesaj başına kuruşlar</span></div>
+          <div><span class="k">Durursa</span><span class="v">Müşteriye “teknik sorun” mesajı, size kritik hata e-postası gider.</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="badge"><svg width="26" height="26"><use href="#ic-supabase" width="26" height="26"/></svg></span>
+          <h3>Supabase<small>ana veritabanı</small></h3>
+        </div>
+        <p>Öğrenci listesi, tüm konuşmalar, lead'ler, şikayetler ve anket cevapları burada. Şikayet “paneli” de bu tablonun kendi ekranı.</p>
+        <div class="meta">
+          <div><span class="k">Maliyet</span><span class="v">Ücretsiz katman yeterli</span></div>
+          <div><span class="k">Durursa</span><span class="v">Bot cevap vermeye devam eder; kimlik tanıma, şikayet kaydı ve rapor durur.</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="badge"><svg width="26" height="26"><use href="#ic-sheets" width="26" height="26"/></svg></span>
+          <h3>Google Sheets<small>ayna kopya</small></h3>
+        </div>
+        <p>Alıştığınız görünüm: her mesaj <code class="m">messages</code> sekmesine, her hata <code class="m">errors</code> sekmesine bir satır olarak düşer.</p>
+        <div class="meta">
+          <div><span class="k">Maliyet</span><span class="v">Ücretsiz</span></div>
+          <div><span class="k">Durursa</span><span class="v">Sadece ayna kaybolur; asıl kayıt Supabase'te durur.</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="badge"><svg width="26" height="26"><use href="#ic-gmail" width="26" height="26"/></svg></span>
+          <h3>Apps Script → Gmail<small>e-posta kanalı</small></h3>
+        </div>
+        <p>Ücretsiz e-posta çıkışı. Şikayet bildirimleri, insana devir uyarıları, SLA hatırlatmaları ve aylık rapor buradan gönderilir.</p>
+        <div class="meta">
+          <div><span class="k">Maliyet</span><span class="v">Ücretsiz</span></div>
+          <div><span class="k">Durursa</span><span class="v">E-posta uyarıları gitmez; Telegram ve CallMeBot yedekte kalır.</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="badge"><svg width="26" height="26"><use href="#ic-railway" width="26" height="26" style="color:var(--ink)"/></svg></span>
+          <h3>Railway<small>sunucu</small></h3>
+        </div>
+        <p>Kodun 7/24 çalıştığı yer. GitHub'a her gönderimde kendini otomatik günceller; ayarlar ve şifreler burada saklanır.</p>
+        <div class="meta">
+          <div><span class="k">Maliyet</span><span class="v">Aylık birkaç dolar</span></div>
+          <div><span class="k">Durursa</span><span class="v">Bot tamamen susar — mesajlar Meta'da bekler, kaybolmaz.</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="badge"><svg width="26" height="26"><use href="#ic-github" width="26" height="26" style="color:var(--ink)"/></svg></span>
+          <h3>GitHub<small>kaynak</small></h3>
+        </div>
+        <p>Kodun ve tüm ayar dosyalarının durduğu yer. <code class="m">faq.md</code> dosyasını buradan düzenlersiniz, değişiklik dakikalar içinde canlıya çıkar.</p>
+        <div class="meta">
+          <div><span class="k">Maliyet</span><span class="v">Ücretsiz</span></div>
+          <div><span class="k">Durursa</span><span class="v">Çalışan bot etkilenmez, sadece güncelleme yapılamaz.</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="badge"><svg width="26" height="26"><use href="#ic-telegram" width="26" height="26"/></svg></span>
+          <h3>Telegram <span class="opt">opsiyonel</span><small>anlık bildirim</small></h3>
+        </div>
+        <p>E-postayı kaçırmamak için ikinci kanal: aynı uyarılar Telegram grubuna da düşer.</p>
+        <div class="meta">
+          <div><span class="k">Maliyet</span><span class="v">Ücretsiz</span></div>
+          <div><span class="k">Durursa</span><span class="v">Hiçbir şey; e-posta zaten gidiyor.</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="badge"><svg width="24" height="26" style="color:var(--ink)"><use href="#ic-phone" width="24" height="26"/></svg></span>
+          <h3>CallMeBot <span class="opt">opsiyonel</span><small>WhatsApp uyarısı</small></h3>
+        </div>
+        <p>Personelin kendi WhatsApp'ına uyarı düşürür — masada olmadıklarında en hızlı ulaşan kanal.</p>
+        <div class="meta">
+          <div><span class="k">Maliyet</span><span class="v">Ücretsiz</span></div>
+          <div><span class="k">Durursa</span><span class="v">Hiçbir şey; diğer kanallar çalışır.</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="badge"><svg width="26" height="26"><use href="#ic-instagram" width="26" height="26"/></svg></span>
+          <h3>ManyChat <span class="opt">opsiyonel</span><small>Instagram DM</small></h3>
+        </div>
+        <p>Ayrı bir akış ama aynı bilgi: <code class="m">GET /faq</code> adresinden aynı dosyayı çeker, böylece iki yerde iki farklı fiyat yaşamaz.</p>
+        <div class="meta">
+          <div><span class="k">Maliyet</span><span class="v">ManyChat aboneliği</span></div>
+          <div><span class="k">Durursa</span><span class="v">WhatsApp tarafı etkilenmez.</span></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========== VERİ =========== -->
+  <section id="veri">
+    <p class="sec-label">veri</p>
+    <h2>Beş tablo, beş soru</h2>
+    <p class="prose">Supabase'te ne nerede duruyor ve günlük işte kim hangisine bakıyor?</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Tablo</th><th>Ne tutar</th><th>Kim bakar</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>students</code></td>
+            <td>Kayıtlı öğrenci ve veli numaraları — botun “bu bizim müşterimiz” demesini sağlayan liste.</td>
+            <td class="who">Bir kez CSV ile yüklenir, ara sıra güncellenir</td>
+          </tr>
+          <tr>
+            <td><code>conversations</code></td>
+            <td>Gelen ve giden her mesaj, niyet etiketiyle birlikte. Aylık rapor bu tablodan üretilir.</td>
+            <td class="who">Otomatik — kimse elle dokunmaz</td>
+          </tr>
+          <tr>
+            <td><code>leads</code></td>
+            <td>Kayıt olmak veya aranmak isteyenler; son mesajı ve konusuyla.</td>
+            <td class="who">Satış — arayınca <code>status</code> günceller</td>
+          </tr>
+          <tr>
+            <td><code>complaints</code></td>
+            <td>Şikayet metni, son dönüş tarihi ve durumu. Süresi geçen açık kayıt hatırlatma e-postası tetikler.</td>
+            <td class="who">Şube sorumlusu — çözünce <code>resolved</code> yapar</td>
+          </tr>
+          <tr>
+            <td><code>survey_responses</code></td>
+            <td>Memnuniyet anketi buton cevapları, hangi ankete ait olduğuyla.</td>
+            <td class="who">Dönem sonu değerlendirme</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- =========== AYARLAR =========== -->
+  <section id="ayarlar">
+    <p class="sec-label">ayarlar</p>
+    <h2>Bir şeyi değiştirmek istediğinizde</h2>
+    <p class="prose">
+      Kod yazmanız gereken tek bir durum yok. Aşağıdaki dosyaları GitHub'dan
+      düzenlemeniz yeterli; kaydettikten birkaç dakika sonra canlıda.
+    </p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Neyi değiştirmek istiyorsunuz</th><th>Dosya</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Botun bildiği bilgiler — programlar, kurallar, ne söyleyip söylemeyeceği</td><td><code>faq.md</code></td></tr>
+          <tr><td>Konuşma üslubu ve karakteri</td><td><code>config/system-prompt.md</code></td></tr>
+          <tr><td>Niyet kategorileri ve “emin değilsen sor” eşiği</td><td><code>config/intents.json</code></td></tr>
+          <tr><td>Buton menüsündeki yazılar</td><td><code>config/buttons.json</code></td></tr>
+          <tr><td>Şikayete kaç saatte dönüş sözü verileceği</td><td><code>config/sla.json</code></td></tr>
+          <tr><td>Uyarıların kime gideceği (satış / şikayet ayrı ayrı)</td><td><code>config/recipients.json</code></td></tr>
+          <tr><td>“Beni insana bağla” sayılan kelimeler</td><td><code>config/handover-keywords.json</code></td></tr>
+          <tr><td>Konuşmayı kibarca bitiren kelimeler</td><td><code>config/negative-keywords.json</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- =========== YOLCULUK =========== -->
+  <section id="ornek">
+    <p class="sec-label">örnek</p>
+    <h2>“Geçen dönem hocadan memnun kalmadık”</h2>
+    <p class="prose">
+      Bu cümle hiçbir anahtar kelime listesinde yok — yine de sistem onu
+      şikayet olarak yakalar. Adım adım ne olduğu:
+    </p>
+
+    <div class="journey">
+      <div class="step"><span class="num">01</span><div><b>Mesaj gelir.</b><p>Meta, webhook adresine mesajı bırakır; sunucu saniyeler içinde alır.</p></div></div>
+      <div class="step"><span class="num">02</span><div><b>Buton mu, küfür mü diye bakılır.</b><p>İkisi de değil — akış devam eder.</p></div></div>
+      <div class="step"><span class="num">03</span><div><b>Numara sorgulanır.</b><p><code class="m">students</code> tablosunda varsa destek moduna geçilir; yoksa satış modu.</p></div></div>
+      <div class="step"><span class="num">04</span><div><b>Model çağrılır.</b><p>Cevap, niyet (<code class="m">sikayet</code>) ve güven puanı (0,9) tek seferde döner.</p></div></div>
+      <div class="step"><span class="num">05</span><div><b>Empati cevabı gider.</b><p>Savunmaya geçmeyen, satış yapmayan kısa bir mesaj.</p></div></div>
+      <div class="step"><span class="num">06</span><div><b>Şikayet kaydı açılır.</b><p><code class="m">complaints</code> tablosuna, 24 saat sonrası son tarih olarak yazılır.</p></div></div>
+      <div class="step"><span class="num">07</span><div><b>Sorumluya e-posta gider.</b><p>Müşteri numarası, şikayet metni ve son dönüş tarihiyle birlikte.</p></div></div>
+      <div class="step"><span class="num">08</span><div><b>Müşteriye söz verilir.</b><p>“Kaydınızı oluşturdum, en geç 24 saat içinde dönüş yapılacak.”</p></div></div>
+      <div class="step"><span class="num">09</span><div><b>Süre dolarsa hatırlatılır.</b><p>Kayıt hâlâ açıksa saatlik kontrol ikinci bir e-posta gönderir — unutulmaz.</p></div></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>SevimsOffice/ALWA</span>
+    <span>dal: claude/alwa-whatsapp-agent-8hwvzb</span>
+    <span>sürüm: v2 — üç katmanlı yönlendirici</span>
+  </footer>
+
+</div>
