@@ -6,8 +6,9 @@ natural, human tone, logs every message to a Google Sheet, detects when
 someone wants to enroll or talk to a human and alerts staff, and tracks
 every error step-by-step.
 
-📍 **Visual system map:** open `docs/architecture.html` — every service,
-every connection, and the full message flow on one page (in Turkish).
+📍 **Visual system map:** every service, every connection, and the full
+message flow on one page — `docs/architecture.html` (Turkish) /
+`docs/architecture-en.html` (English).
 
 ```
 Customer on WhatsApp                        Instagram (ManyChat, optional)

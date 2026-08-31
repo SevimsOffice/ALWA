@@ -1,0 +1,815 @@
+<title>ALWA System Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+
+<style>
+  :root {
+    --bg:        #F1F4F0;
+    --surface:   #FFFFFF;
+    --surface-2: #E7EBE5;
+    --tint:      #E2EFE7;
+    --ink:       #121A15;
+    --muted:     #5B6862;
+    --line:      #D2D9D1;
+    --line-strong:#9AA79F;
+    --signal:    #14713F;
+    --ai:        #3A4FA0;
+    --warn:      #9A6209;
+    --alert:     #AC3C2E;
+    --shadow:    0 1px 2px rgba(18,26,21,.05), 0 8px 24px -16px rgba(18,26,21,.18);
+    --display: "Bricolage Grotesque", "Trebuchet MS", sans-serif;
+    --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:        #0C1310;
+      --surface:   #141D19;
+      --surface-2: #1B2621;
+      --tint:      #163023;
+      --ink:       #E4EBE6;
+      --muted:     #93A199;
+      --line:      #27332E;
+      --line-strong:#586A61;
+      --signal:    #45C98D;
+      --ai:        #8AA0EA;
+      --warn:      #E0A445;
+      --alert:     #EF806E;
+      --shadow:    0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg:        #0C1310;
+    --surface:   #141D19;
+    --surface-2: #1B2621;
+    --tint:      #163023;
+    --ink:       #E4EBE6;
+    --muted:     #93A199;
+    --line:      #27332E;
+    --line-strong:#586A61;
+    --signal:    #45C98D;
+    --ai:        #8AA0EA;
+    --warn:      #E0A445;
+    --alert:     #EF806E;
+    --shadow:    0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px 96px; }
+  .prose { max-width: 68ch; }
+
+  /* ---------- header ---------- */
+  header { padding: 72px 0 40px; }
+  .eyebrow {
+    font-family: var(--mono); font-size: 12px; letter-spacing: .16em;
+    text-transform: uppercase; color: var(--signal); margin: 0 0 18px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .eyebrow::after { content: ""; height: 1px; flex: 1; background: var(--line); max-width: 180px; }
+  h1 {
+    font-family: var(--display); font-weight: 800; font-size: clamp(2.3rem, 5.5vw, 3.7rem);
+    line-height: 1.02; letter-spacing: -.025em; margin: 0 0 20px; text-wrap: balance;
+  }
+  .lede { font-size: 1.14rem; color: var(--muted); max-width: 60ch; margin: 0; }
+
+  .facts {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1px; background: var(--line); border: 1px solid var(--line);
+    border-radius: 14px; overflow: hidden; margin-top: 44px;
+  }
+  .fact { background: var(--surface); padding: 18px 20px; }
+  .fact b {
+    display: block; font-family: var(--display); font-weight: 800;
+    font-size: 2rem; line-height: 1; letter-spacing: -.02em; font-variant-numeric: tabular-nums;
+  }
+  .fact span { display: block; margin-top: 8px; font-size: 13.5px; color: var(--muted); }
+
+  /* ---------- sections ---------- */
+  section { padding-top: 72px; }
+  .sec-label {
+    font-family: var(--mono); font-size: 11.5px; letter-spacing: .18em;
+    text-transform: uppercase; color: var(--muted); margin: 0 0 10px;
+  }
+  h2 {
+    font-family: var(--display); font-weight: 600; font-size: clamp(1.5rem, 3vw, 2rem);
+    line-height: 1.15; letter-spacing: -.018em; margin: 0 0 12px; text-wrap: balance;
+  }
+  h2 + p { margin: 0 0 28px; color: var(--muted); }
+
+  /* ---------- figures ---------- */
+  figure { margin: 0; }
+  .canvas {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
+    box-shadow: var(--shadow); padding: 8px; overflow-x: auto;
+  }
+  .diagram { display: block; width: 100%; min-width: 720px; height: auto; color: var(--line-strong); }
+  figcaption {
+    margin-top: 14px; font-size: 14px; color: var(--muted); max-width: 72ch;
+  }
+  .scroll-hint { display: none; font-family: var(--mono); font-size: 11px; color: var(--muted); margin: 0 0 8px; }
+  @media (max-width: 820px) { .scroll-hint { display: block; } }
+
+  /* svg node styling */
+  .n rect, .n circle { fill: var(--surface); stroke: var(--line-strong); stroke-width: 1.4; }
+  .n .title { font-family: var(--body); font-size: 14px; font-weight: 600; fill: var(--ink); }
+  .n .sub   { font-family: var(--body); font-size: 11.5px; fill: var(--muted); }
+  .n .mono  { font-family: var(--mono); font-size: 11px; fill: var(--muted); }
+  .hub rect { fill: var(--tint); stroke: var(--signal); stroke-width: 2; }
+  .hub .title { font-size: 16px; font-weight: 600; }
+  .band rect { fill: var(--surface-2); stroke: none; }
+  .edge { fill: none; stroke: var(--line-strong); stroke-width: 1.5; }
+  .edge.dash { stroke-dasharray: 5 4; }
+  .elabel { font-family: var(--mono); font-size: 10.5px; fill: var(--muted); }
+  .layer-tag { font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; fill: var(--signal); }
+  .t-sales { fill: var(--signal); } .t-alert { fill: var(--alert); }
+  .t-warn  { fill: var(--warn); }   .t-ai    { fill: var(--ai); }
+  .yes { font-family: var(--mono); font-size: 10.5px; fill: var(--muted); }
+
+  /* ---------- service cards ---------- */
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+    padding: 20px; display: flex; flex-direction: column; gap: 12px;
+  }
+  .card-head { display: flex; align-items: center; gap: 12px; }
+  .badge {
+    width: 44px; height: 44px; border-radius: 12px; background: var(--surface-2);
+    display: grid; place-items: center; flex: none;
+  }
+  .card h3 { font-family: var(--display); font-weight: 600; font-size: 1.05rem; margin: 0; letter-spacing: -.01em; }
+  .card h3 small { display: block; font-family: var(--mono); font-size: 10.5px; font-weight: 400; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; margin-top: 3px; }
+  .card p { margin: 0; font-size: 14.5px; color: var(--muted); flex: 1; }
+  .meta { border-top: 1px solid var(--line); padding-top: 12px; display: grid; gap: 6px; }
+  .meta div { display: grid; grid-template-columns: 84px 1fr; gap: 10px; font-size: 12.5px; }
+  .meta dt, .meta .k { font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); padding-top: 2px; }
+  .meta .v { color: var(--ink); }
+  .opt { font-family: var(--mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase;
+         color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 2px 8px; }
+
+  /* ---------- tables ---------- */
+  .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; min-width: 560px; }
+  th, td { text-align: left; padding: 13px 18px; border-bottom: 1px solid var(--line); font-size: 14.5px; vertical-align: top; }
+  thead th { font-family: var(--mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-weight: 400; }
+  tbody tr:last-child td { border-bottom: none; }
+  td code, .m { font-family: var(--mono); font-size: 13px; color: var(--signal); }
+  td .who { color: var(--muted); }
+
+  /* ---------- journey ---------- */
+  .journey { display: grid; gap: 0; counter-reset: step; max-width: 76ch; }
+  .step {
+    display: grid; grid-template-columns: 40px 1fr; gap: 18px; padding: 16px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .step:last-child { border-bottom: none; }
+  .step .num {
+    font-family: var(--mono); font-size: 12px; color: var(--muted);
+    font-variant-numeric: tabular-nums; padding-top: 3px;
+  }
+  .step b { font-weight: 600; }
+  .step p { margin: 4px 0 0; font-size: 14.5px; color: var(--muted); }
+
+  /* ---------- footer ---------- */
+  footer {
+    margin-top: 88px; padding-top: 24px; border-top: 1px solid var(--line);
+    font-family: var(--mono); font-size: 12px; color: var(--muted);
+    display: flex; flex-wrap: wrap; gap: 8px 28px;
+  }
+  a { color: var(--signal); }
+  :focus-visible { outline: 2px solid var(--signal); outline-offset: 3px; border-radius: 4px; }
+</style>
+
+<!-- ===== service symbol sprite ===== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="ic-wa" viewBox="0 0 32 32">
+      <circle cx="16" cy="16" r="15" fill="#25D366"/>
+      <path d="M11.3 8.8c.6 0 1 .35 1.2.9l.85 2.1c.2.5.03 1.05-.4 1.35l-.9.62c.9 1.85 2.4 3.35 4.25 4.25l.62-.9c.3-.43.85-.6 1.35-.4l2.1.85c.55.22.9.6.9 1.2v2.2c0 .72-.6 1.3-1.3 1.22C13.7 21.4 10.1 17.8 8.9 10.1c-.08-.7.5-1.3 1.22-1.3z" fill="#fff"/>
+    </symbol>
+    <symbol id="ic-ai" viewBox="0 0 32 32">
+      <path d="M16 3l11.3 6.5v13L16 29 4.7 22.5v-13z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>
+      <circle cx="16" cy="16" r="3.3" fill="currentColor"/>
+      <path d="M16 12.7V7.2M16 19.3v5.5M19 14.3l4.7-2.7M12.9 17.8l-4.6 2.6M19 17.8l4.7 2.6M12.9 14.3L8.3 11.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="ic-supabase" viewBox="0 0 32 32">
+      <path d="M17.4 2.6 6.2 16.4c-.7.9-.1 2.2 1 2.2h7.3v10.6c0 1.2 1.5 1.7 2.2.8l11.2-13.8c.7-.9.1-2.2-1-2.2h-7.3V3.4c0-1.2-1.5-1.7-2.2-.8z" fill="#3ECF8E"/>
+    </symbol>
+    <symbol id="ic-sheets" viewBox="0 0 32 32">
+      <path d="M7 3h11l7 7v19H7z" fill="#0F9D58"/>
+      <path d="M18 3l7 7h-7z" fill="#0B7C46"/>
+      <rect x="11" y="14" width="10" height="9" fill="#fff"/>
+      <path d="M11 17.5h10M11 20.5h10M15.3 14v9" stroke="#0F9D58" stroke-width="1.1"/>
+    </symbol>
+    <symbol id="ic-gmail" viewBox="0 0 32 32">
+      <rect x="3" y="7" width="26" height="18" rx="2.5" fill="#EA4335"/>
+      <path d="M3.5 8.5 16 18 28.5 8.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="ic-telegram" viewBox="0 0 32 32">
+      <circle cx="16" cy="16" r="15" fill="#229ED9"/>
+      <path d="M8 16.2 24 9.5l-3 14-5.4-4.1-2.2 3-.6-4.6z" fill="#fff"/>
+      <path d="M12.8 17.8 24 9.5l-9.2 10.3" fill="none" stroke="#229ED9" stroke-width=".9"/>
+    </symbol>
+    <symbol id="ic-phone" viewBox="0 0 32 32">
+      <rect x="9" y="3" width="14" height="26" rx="3" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M13.5 25.5h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      <path d="M16 9.5a4 4 0 0 1 4 4v3l1 1.5h-10l1-1.5v-3a4 4 0 0 1 4-4z" fill="currentColor"/>
+    </symbol>
+    <symbol id="ic-railway" viewBox="0 0 32 32">
+      <rect x="3" y="8" width="26" height="3.4" rx="1.7" fill="currentColor"/>
+      <rect x="3" y="14.3" width="26" height="3.4" rx="1.7" fill="currentColor" opacity=".75"/>
+      <rect x="3" y="20.6" width="18" height="3.4" rx="1.7" fill="currentColor" opacity=".5"/>
+    </symbol>
+    <symbol id="ic-github" viewBox="0 0 32 32">
+      <circle cx="9" cy="8" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/>
+      <circle cx="9" cy="25" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/>
+      <circle cx="23" cy="8" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M9 11.2v10.6M23 11.2v3c0 3.2-2.6 5.8-5.8 5.8h-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="ic-instagram" viewBox="0 0 32 32">
+      <rect x="3.5" y="3.5" width="25" height="25" rx="7.5" fill="none" stroke="#C13584" stroke-width="2.4"/>
+      <circle cx="16" cy="16" r="5.6" fill="none" stroke="#C13584" stroke-width="2.4"/>
+      <circle cx="23.2" cy="8.8" r="1.7" fill="#C13584"/>
+    </symbol>
+    <symbol id="ic-script" viewBox="0 0 32 32">
+      <rect x="4" y="4" width="24" height="24" rx="5" fill="#4285F4"/>
+      <path d="M13.5 11 9 16l4.5 5M18.5 11l4.5 5-4.5 5" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">AIandTECH · WhatsApp AI agent</p>
+    <h1>ALWA System Map</h1>
+    <p class="lede">
+      One WhatsApp number, ten services behind it. This page shows what
+      each part does, who's connected to whom, and how a single message
+      travels through the system.
+    </p>
+
+    <div class="facts">
+      <div class="fact"><b>1</b><span>WhatsApp number — every flow runs through the same line</span></div>
+      <div class="fact"><b>3</b><span>routing layers: identity, intent, action</span></div>
+      <div class="fact"><b>5</b><span>data tables — students, conversations, leads, complaints, surveys</span></div>
+      <div class="fact"><b>10</b><span>connected services, 4 of them optional</span></div>
+    </div>
+  </header>
+
+  <!-- =========== FIGURE 1: CONNECTION MAP =========== -->
+  <section id="map">
+    <p class="sec-label">map</p>
+    <h2>What's connected to what?</h2>
+    <p class="prose">
+      The server in the middle is where everything meets. The customer
+      comes in from the left and gets the reply back on the left; in
+      between, the server consults the model, writes data to the right,
+      and alerts staff through the channels below when needed.
+    </p>
+
+    <figure>
+      <p class="scroll-hint">← scroll sideways to see the full diagram →</p>
+      <div class="canvas">
+        <svg class="diagram" viewBox="0 0 1000 650" role="img"
+             aria-label="The ALWA server sits at the center; WhatsApp and Instagram enter on the left, OpenAI sits above, Supabase and Google Sheets sit on the right, and email, Telegram and WhatsApp alert channels sit below.">
+          <defs>
+            <marker id="a-map" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <polygon points="0,1.5 9,5 0,8.5" fill="currentColor"/>
+            </marker>
+          </defs>
+
+          <!-- GitHub -->
+          <g class="n">
+            <rect x="30" y="34" width="196" height="74" rx="12"/>
+            <use href="#ic-github" x="48" y="54" width="30" height="30" style="color:var(--ink)"/>
+            <text class="title" x="88" y="66">GitHub</text>
+            <text class="sub" x="88" y="85">code + config files</text>
+          </g>
+          <path class="edge" d="M128 108 L128 150 Q128 162 142 168 L378 262" marker-end="url(#a-map)"/>
+          <text class="elabel" x="150" y="146">push → auto-deploy</text>
+
+          <!-- OpenAI -->
+          <g class="n">
+            <rect x="396" y="30" width="212" height="80" rx="12"/>
+            <use href="#ic-ai" x="416" y="54" width="32" height="32" style="color:var(--ai)"/>
+            <text class="title" x="458" y="64">OpenAI</text>
+            <text class="sub" x="458" y="83">writes the reply, tags the intent</text>
+          </g>
+          <path class="edge" d="M470 250 L470 112" marker-end="url(#a-map)"/>
+          <text class="elabel" x="462" y="185" text-anchor="end">question + FAQ</text>
+          <path class="edge" d="M534 112 L534 250" marker-end="url(#a-map)"/>
+          <text class="elabel" x="542" y="185">reply + intent + confidence</text>
+
+          <!-- WhatsApp -->
+          <g class="n">
+            <rect x="30" y="228" width="204" height="92" rx="12"/>
+            <use href="#ic-wa" x="50" y="256" width="34" height="34"/>
+            <text class="title" x="94" y="264">WhatsApp</text>
+            <text class="sub" x="94" y="283">Meta Cloud API</text>
+            <text class="sub" x="94" y="300">where the customer writes</text>
+          </g>
+          <path class="edge" d="M234 258 L376 268" marker-end="url(#a-map)"/>
+          <text class="elabel" x="248" y="250">incoming message</text>
+          <path class="edge" d="M376 336 L234 306" marker-end="url(#a-map)"/>
+          <text class="elabel" x="248" y="332">reply · button · survey</text>
+
+          <!-- Instagram / ManyChat -->
+          <g class="n">
+            <rect x="30" y="386" width="204" height="80" rx="12"/>
+            <use href="#ic-instagram" x="50" y="410" width="32" height="32"/>
+            <text class="title" x="92" y="420">Instagram</text>
+            <text class="sub" x="92" y="438">ManyChat flow</text>
+            <text class="mono" x="92" y="455">optional</text>
+          </g>
+          <path class="edge dash" d="M234 414 L378 380" marker-end="url(#a-map)"/>
+          <text class="elabel" x="250" y="404">GET /faq · same knowledge</text>
+
+          <!-- HUB -->
+          <g class="n hub">
+            <rect x="378" y="250" width="240" height="140" rx="16"/>
+            <use href="#ic-railway" x="398" y="272" width="28" height="28" style="color:var(--signal)"/>
+            <text class="layer-tag" x="436" y="286">RAILWAY · ALWAYS ON</text>
+            <text class="title" x="398" y="322">ALWA server</text>
+            <text class="sub" x="398" y="342">Node.js · Express · src/index.js</text>
+            <text class="sub" x="398" y="362">3-layer router</text>
+            <text class="mono" x="398" y="379">identity → intent → action</text>
+          </g>
+
+          <!-- Supabase -->
+          <g class="n">
+            <rect x="762" y="196" width="208" height="104" rx="12"/>
+            <use href="#ic-supabase" x="782" y="218" width="30" height="30"/>
+            <text class="title" x="822" y="230">Supabase</text>
+            <text class="sub" x="822" y="248">primary database</text>
+            <text class="mono" x="782" y="272">students · conversations</text>
+            <text class="mono" x="782" y="288">leads · complaints · surveys</text>
+          </g>
+          <path class="edge" d="M618 292 L760 250" marker-end="url(#a-map)"/>
+          <text class="elabel" x="634" y="270">is this number registered? · open record</text>
+
+          <!-- Sheets -->
+          <g class="n">
+            <rect x="762" y="330" width="208" height="88" rx="12"/>
+            <use href="#ic-sheets" x="782" y="352" width="28" height="28"/>
+            <text class="title" x="820" y="364">Google Sheets</text>
+            <text class="sub" x="820" y="382">human-readable mirror</text>
+            <text class="mono" x="782" y="404">messages · errors</text>
+          </g>
+          <path class="edge" d="M618 352 L760 370" marker-end="url(#a-map)"/>
+          <text class="elabel" x="636" y="392">a copy of every message</text>
+
+          <!-- alert channels -->
+          <g class="n band"><rect x="150" y="486" width="700" height="132" rx="14"/></g>
+          <text class="layer-tag" x="170" y="512">STAFF ALERT CHANNELS</text>
+
+          <g class="n">
+            <rect x="170" y="524" width="216" height="76" rx="12"/>
+            <use href="#ic-script" x="188" y="546" width="26" height="26"/>
+            <use href="#ic-gmail" x="220" y="548" width="26" height="22"/>
+            <text class="sub" x="188" y="590">Apps Script → Gmail</text>
+          </g>
+          <g class="n">
+            <rect x="404" y="524" width="180" height="76" rx="12"/>
+            <use href="#ic-telegram" x="422" y="546" width="26" height="26"/>
+            <text class="sub" x="422" y="590">Telegram · optional</text>
+          </g>
+          <g class="n">
+            <rect x="602" y="524" width="212" height="76" rx="12"/>
+            <use href="#ic-phone" x="620" y="546" width="24" height="26" style="color:var(--ink)"/>
+            <text class="sub" x="620" y="590">CallMeBot · optional</text>
+          </g>
+          <path class="edge" d="M440 392 L300 522" marker-end="url(#a-map)"/>
+          <text class="elabel" x="286" y="452">complaint · handover · error</text>
+          <path class="edge" d="M498 392 L494 522" marker-end="url(#a-map)"/>
+          <path class="edge" d="M560 392 L692 522" marker-end="url(#a-map)"/>
+        </svg>
+      </div>
+      <figcaption>
+        Solid arrows are always-on connections; the dashed arrow is the
+        optional Instagram branch. Even if Supabase or Sheets goes down,
+        the bot keeps replying — the only thing that breaks is record-keeping.
+      </figcaption>
+    </figure>
+  </section>
+
+  <!-- =========== FIGURE 2: FLOW =========== -->
+  <section id="flow">
+    <p class="sec-label">flow</p>
+    <h2>What happens when a message arrives?</h2>
+    <p class="prose">
+      Every message passes through the same three gates. The key point:
+      intent is measured <em>fresh on every message</em> — a complaint
+      that appears in the middle of a pricing conversation is caught
+      instantly.
+    </p>
+
+    <figure>
+      <p class="scroll-hint">← scroll sideways to see the full diagram →</p>
+      <div class="canvas">
+        <svg class="diagram" viewBox="0 0 900 980" role="img"
+             aria-label="Message flow: after the survey and profanity checks, the identity layer, the intent layer, and four action branches.">
+          <defs>
+            <marker id="a-flow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <polygon points="0,1.5 9,5 0,8.5" fill="currentColor"/>
+            </marker>
+          </defs>
+
+          <!-- start -->
+          <g class="n">
+            <rect x="160" y="16" width="340" height="52" rx="26"/>
+            <use href="#ic-wa" x="180" y="30" width="24" height="24"/>
+            <text class="title" x="214" y="47">Incoming WhatsApp message</text>
+          </g>
+          <path class="edge" d="M330 68 L330 92" marker-end="url(#a-flow)"/>
+
+          <!-- D1 -->
+          <g class="n">
+            <rect x="160" y="92" width="340" height="52" rx="12"/>
+            <text class="title" x="180" y="115">Was a survey button tapped?</text>
+            <text class="sub" x="180" y="133">button reply, arrives with a template ID</text>
+          </g>
+          <path class="edge" d="M500 118 L556 118" marker-end="url(#a-flow)"/>
+          <text class="yes" x="512" y="110">yes</text>
+          <g class="n">
+            <rect x="560" y="92" width="310" height="52" rx="12"/>
+            <text class="sub" x="578" y="114">Survey answer is recorded, a thank-you goes out.</text>
+            <text class="mono" x="578" y="132">never enters the sales flow</text>
+          </g>
+          <path class="edge" d="M330 144 L330 172" marker-end="url(#a-flow)"/>
+
+          <!-- D2 -->
+          <g class="n">
+            <rect x="160" y="172" width="340" height="52" rx="12"/>
+            <text class="title" x="180" y="195">Profanity or "stop messaging me"?</text>
+            <text class="sub" x="180" y="213">keyword list, never reaches the AI</text>
+          </g>
+          <path class="edge" d="M500 198 L556 198" marker-end="url(#a-flow)"/>
+          <text class="yes" x="512" y="190">yes</text>
+          <g class="n">
+            <rect x="560" y="172" width="310" height="52" rx="12"/>
+            <text class="sub" x="578" y="194">One polite closing message,</text>
+            <text class="sub" x="578" y="212">then 72 hours of silence.</text>
+          </g>
+          <path class="edge" d="M330 224 L330 256" marker-end="url(#a-flow)"/>
+
+          <!-- LAYER 1 -->
+          <text class="layer-tag" x="160" y="250">LAYER 1 · IDENTITY</text>
+          <g class="n">
+            <rect x="160" y="256" width="340" height="76" rx="12"/>
+            <text class="title" x="180" y="282">Is the number in the students table?</text>
+            <text class="sub" x="180" y="302">one query to Supabase, under a second</text>
+            <text class="mono" x="180" y="320">src/db.js · findStudent()</text>
+          </g>
+          <path class="edge" d="M500 294 L556 294" marker-end="url(#a-flow)"/>
+          <g class="n">
+            <rect x="560" y="262" width="310" height="64" rx="12"/>
+            <use href="#ic-supabase" x="578" y="282" width="24" height="24"/>
+            <text class="sub" x="612" y="290">students</text>
+            <text class="mono" x="612" y="308">the school's registered number list</text>
+          </g>
+          <path class="edge" d="M330 332 L330 356" marker-end="url(#a-flow)"/>
+
+          <g class="n">
+            <rect x="160" y="356" width="165" height="40" rx="10"/>
+            <text class="sub" x="176" y="381">registered → support mode</text>
+          </g>
+          <g class="n">
+            <rect x="335" y="356" width="165" height="40" rx="10"/>
+            <text class="sub" x="351" y="381">new → sales mode</text>
+          </g>
+          <path class="edge" d="M330 396 L330 428" marker-end="url(#a-flow)"/>
+
+          <!-- LAYER 2 -->
+          <text class="layer-tag" x="160" y="422">LAYER 2 · INTENT</text>
+          <g class="n">
+            <rect x="160" y="428" width="340" height="88" rx="12"/>
+            <text class="title" x="180" y="454">One OpenAI call</text>
+            <text class="sub" x="180" y="474">returns reply + intent + confidence together</text>
+            <text class="mono t-ai" x="180" y="494">course · price · complaint · suggestion · human · other</text>
+            <text class="mono" x="180" y="510">src/ai.js</text>
+          </g>
+          <path class="edge" d="M500 458 L556 448" marker-end="url(#a-flow)"/>
+          <g class="n">
+            <rect x="560" y="414" width="310" height="56" rx="12"/>
+            <use href="#ic-ai" x="578" y="430" width="24" height="24" style="color:var(--ai)"/>
+            <text class="sub" x="612" y="440">OpenAI</text>
+            <text class="mono" x="612" y="457">knowledge base: faq.md</text>
+          </g>
+          <path class="edge" d="M500 494 L556 508" marker-end="url(#a-flow)"/>
+          <g class="n">
+            <rect x="560" y="482" width="310" height="60" rx="12"/>
+            <text class="sub t-warn" x="578" y="504">If confidence is low (&lt; 0.55)</text>
+            <text class="sub" x="578" y="524">a 3-button menu goes out — no guessing.</text>
+          </g>
+          <path class="edge" d="M330 516 L330 560" marker-end="url(#a-flow)"/>
+
+          <!-- LAYER 3 fan-out -->
+          <text class="layer-tag" x="160" y="556">LAYER 3 · ACTION — BY INTENT</text>
+          <path class="edge" d="M330 566 L330 588 M122 588 L788 588 M122 588 L122 612 M347 588 L347 612 M572 588 L572 612 M788 588 L788 612"/>
+
+          <g class="n">
+            <rect x="20" y="612" width="205" height="132" rx="12"/>
+            <text class="title t-sales" x="38" y="638">Course · price</text>
+            <text class="sub" x="38" y="662">AI reply goes out.</text>
+            <text class="sub" x="38" y="682">Price questions get routed</text>
+            <text class="sub" x="38" y="700">to a call.</text>
+            <text class="mono" x="38" y="726">record: conversations</text>
+          </g>
+          <g class="n">
+            <rect x="245" y="612" width="205" height="132" rx="12"/>
+            <text class="title t-alert" x="263" y="638">Complaint</text>
+            <text class="sub" x="263" y="662">A record opens with a deadline.</text>
+            <text class="sub" x="263" y="682">Staff get an email.</text>
+            <text class="sub" x="263" y="700">The customer is promised:</text>
+            <text class="mono t-alert" x="263" y="726">"a reply within 24 hours"</text>
+          </g>
+          <g class="n">
+            <rect x="470" y="612" width="205" height="132" rx="12"/>
+            <text class="title t-warn" x="488" y="638">Wants a human</text>
+            <text class="sub" x="488" y="662">Enrollment / call-back request.</text>
+            <text class="sub" x="488" y="682">Staff get a handover alert,</text>
+            <text class="sub" x="488" y="700">a lead record opens.</text>
+            <text class="mono" x="488" y="726">record: leads</text>
+          </g>
+          <g class="n">
+            <rect x="695" y="612" width="185" height="132" rx="12"/>
+            <text class="title" x="713" y="638">Other</text>
+            <text class="sub" x="713" y="662">Greetings, thanks,</text>
+            <text class="sub" x="713" y="682">general questions.</text>
+            <text class="sub" x="713" y="700">Just a reply is sent.</text>
+          </g>
+
+          <!-- log band -->
+          <g class="n band"><rect x="20" y="782" width="860" height="66" rx="12"/></g>
+          <use href="#ic-supabase" x="44" y="802" width="24" height="24"/>
+          <use href="#ic-sheets" x="76" y="803" width="22" height="22"/>
+          <text class="title" x="116" y="812">Whichever branch it takes: every message gets logged</text>
+          <text class="sub" x="116" y="832">Supabase conversations + Google Sheets messages — this is where the monthly report comes from.</text>
+
+          <!-- timers -->
+          <g class="n">
+            <rect x="20" y="874" width="425" height="82" rx="12"/>
+            <text class="layer-tag" x="40" y="900">HOURLY CHECK</text>
+            <text class="sub" x="40" y="922">If an open complaint is past its deadline,</text>
+            <text class="sub" x="40" y="940">a reminder email goes to staff.</text>
+          </g>
+          <g class="n">
+            <rect x="455" y="874" width="425" height="82" rx="12"/>
+            <text class="layer-tag" x="475" y="900">1ST OF EVERY MONTH</text>
+            <text class="sub" x="475" y="922">A monthly report arrives by email:</text>
+            <text class="sub" x="475" y="940">how many sales questions, complaints, handovers.</text>
+          </g>
+        </svg>
+      </div>
+      <figcaption>
+        Arrows branching to the right are flow-ending paths: survey
+        replies, the polite closing, and the button menu never enter the
+        sales/complaint logic.
+      </figcaption>
+    </figure>
+  </section>
+
+  <!-- =========== SERVICES =========== -->
+  <section id="services">
+    <p class="sec-label">services</p>
+    <h2>What does each service actually do?</h2>
+    <p class="prose">
+      Every card lists that service's job and — the important part —
+      what happens if it goes down. The system is deliberately built
+      this way: no single service outage silences the bot completely.
+    </p>
+
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-head">
+          <span class="badge"><svg width="26" height="26"><use href="#ic-wa" width="26" height="26"/></svg></span>
+          <h3>WhatsApp Business<small>Meta Cloud API</small></h3>
+        </div>
+        <p>Where the customer writes. Messages land on the server via webhook, replies go back through the same channel. Button menus and surveys ride this channel too.</p>
+        <div class="meta">
+          <div><span class="k">Cost</span><span class="v">Meta's conversation pricing</span></div>
+          <div><span class="k">If down</span><span class="v">No messages received, no replies sent — the one critical dependency.</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="badge"><svg width="26" height="26" style="color:var(--ai)"><use href="#ic-ai" width="26" height="26"/></svg></span>
+          <h3>OpenAI<small>language model</small></h3>
+        </div>
+        <p>Writes the reply and, in the same call, tags the message's intent with a confidence score. Only speaks from what's inside <code class="m">faq.md</code>.</p>
+        <div class="meta">
+          <div><span class="k">Cost</span><span class="v">Pay-per-use, fractions of a cent per message</span></div>
+          <div><span class="k">If down</span><span class="v">Customer gets a "technical issue" message; you get a critical-error email.</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="badge"><svg width="26" height="26"><use href="#ic-supabase" width="26" height="26"/></svg></span>
+          <h3>Supabase<small>primary database</small></h3>
+        </div>
+        <p>Student list, every conversation, leads, complaints, and survey answers all live here. The complaint "panel" is simply this table's own screen.</p>
+        <div class="meta">
+          <div><span class="k">Cost</span><span class="v">Free tier is enough</span></div>
+          <div><span class="k">If down</span><span class="v">The bot keeps replying; identity lookup, complaint records, and reporting stop.</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="badge"><svg width="26" height="26"><use href="#ic-sheets" width="26" height="26"/></svg></span>
+          <h3>Google Sheets<small>mirror copy</small></h3>
+        </div>
+        <p>The view you're used to: every message lands as a row in the <code class="m">messages</code> tab, every error in the <code class="m">errors</code> tab.</p>
+        <div class="meta">
+          <div><span class="k">Cost</span><span class="v">Free</span></div>
+          <div><span class="k">If down</span><span class="v">Only the mirror disappears; the real record stays in Supabase.</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="badge"><svg width="26" height="26"><use href="#ic-gmail" width="26" height="26"/></svg></span>
+          <h3>Apps Script → Gmail<small>email channel</small></h3>
+        </div>
+        <p>Free email delivery. Complaint notifications, handover alerts, SLA reminders, and the monthly report all go out through here.</p>
+        <div class="meta">
+          <div><span class="k">Cost</span><span class="v">Free</span></div>
+          <div><span class="k">If down</span><span class="v">Email alerts stop; Telegram and CallMeBot stay as backup.</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="badge"><svg width="26" height="26"><use href="#ic-railway" width="26" height="26" style="color:var(--ink)"/></svg></span>
+          <h3>Railway<small>server</small></h3>
+        </div>
+        <p>Where the code runs around the clock. Redeploys itself automatically on every GitHub push; settings and secrets are stored here.</p>
+        <div class="meta">
+          <div><span class="k">Cost</span><span class="v">A few dollars a month</span></div>
+          <div><span class="k">If down</span><span class="v">The bot goes fully silent — messages wait at Meta, nothing is lost.</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="badge"><svg width="26" height="26"><use href="#ic-github" width="26" height="26" style="color:var(--ink)"/></svg></span>
+          <h3>GitHub<small>source</small></h3>
+        </div>
+        <p>Where the code and every config file live. Edit <code class="m">faq.md</code> here and the change goes live within minutes.</p>
+        <div class="meta">
+          <div><span class="k">Cost</span><span class="v">Free</span></div>
+          <div><span class="k">If down</span><span class="v">The running bot is unaffected — you just can't ship updates.</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="badge"><svg width="26" height="26"><use href="#ic-telegram" width="26" height="26"/></svg></span>
+          <h3>Telegram <span class="opt">optional</span><small>instant notification</small></h3>
+        </div>
+        <p>A second channel in case email gets missed: the same alerts land in a Telegram group too.</p>
+        <div class="meta">
+          <div><span class="k">Cost</span><span class="v">Free</span></div>
+          <div><span class="k">If down</span><span class="v">Nothing — email is already going out.</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="badge"><svg width="24" height="26" style="color:var(--ink)"><use href="#ic-phone" width="24" height="26"/></svg></span>
+          <h3>CallMeBot <span class="opt">optional</span><small>WhatsApp alert</small></h3>
+        </div>
+        <p>Drops an alert into staff's own WhatsApp — the fastest channel to reach them when they're away from a desk.</p>
+        <div class="meta">
+          <div><span class="k">Cost</span><span class="v">Free</span></div>
+          <div><span class="k">If down</span><span class="v">Nothing — the other channels still work.</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="badge"><svg width="26" height="26"><use href="#ic-instagram" width="26" height="26"/></svg></span>
+          <h3>ManyChat <span class="opt">optional</span><small>Instagram DM</small></h3>
+        </div>
+        <p>A separate flow, same knowledge: pulls the same file from <code class="m">GET /faq</code>, so the same price never lives in two different places.</p>
+        <div class="meta">
+          <div><span class="k">Cost</span><span class="v">ManyChat subscription</span></div>
+          <div><span class="k">If down</span><span class="v">The WhatsApp side is unaffected.</span></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========== DATA =========== -->
+  <section id="data">
+    <p class="sec-label">data</p>
+    <h2>Five tables, five questions</h2>
+    <p class="prose">What lives where in Supabase, and who looks at each one day to day?</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Table</th><th>What it holds</th><th>Who looks at it</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>students</code></td>
+            <td>Registered student and parent numbers — the list that lets the bot say "this is our customer."</td>
+            <td class="who">Loaded once via CSV, updated occasionally</td>
+          </tr>
+          <tr>
+            <td><code>conversations</code></td>
+            <td>Every incoming and outgoing message, tagged with its intent. The monthly report is generated from this table.</td>
+            <td class="who">Automatic — nobody touches it by hand</td>
+          </tr>
+          <tr>
+            <td><code>leads</code></td>
+            <td>People who want to enroll or be called back, with their last message and topic.</td>
+            <td class="who">Sales — updates <code>status</code> after calling</td>
+          </tr>
+          <tr>
+            <td><code>complaints</code></td>
+            <td>Complaint text, response deadline, and status. An open record past its deadline triggers a reminder email.</td>
+            <td class="who">Branch manager — marks <code>resolved</code> once handled</td>
+          </tr>
+          <tr>
+            <td><code>survey_responses</code></td>
+            <td>Satisfaction survey button answers, along with which survey they belong to.</td>
+            <td class="who">End-of-term review</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- =========== CONFIG =========== -->
+  <section id="config">
+    <p class="sec-label">config</p>
+    <h2>When you want to change something</h2>
+    <p class="prose">
+      There's no situation that requires writing code. Editing the files
+      below on GitHub is enough — the change goes live within a few
+      minutes of saving.
+    </p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>What you want to change</th><th>File</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>What the bot knows — programs, rules, what it should and shouldn't say</td><td><code>faq.md</code></td></tr>
+          <tr><td>Conversation tone and personality</td><td><code>config/system-prompt.md</code></td></tr>
+          <tr><td>Intent categories and the "ask if unsure" threshold</td><td><code>config/intents.json</code></td></tr>
+          <tr><td>Text on the clarification button menu</td><td><code>config/buttons.json</code></td></tr>
+          <tr><td>How many hours until a complaint response is promised</td><td><code>config/sla.json</code></td></tr>
+          <tr><td>Who alerts go to (sales vs. complaints, separately)</td><td><code>config/recipients.json</code></td></tr>
+          <tr><td>Words that count as "connect me to a human"</td><td><code>config/handover-keywords.json</code></td></tr>
+          <tr><td>Words that politely end a conversation</td><td><code>config/negative-keywords.json</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- =========== JOURNEY =========== -->
+  <section id="example">
+    <p class="sec-label">example</p>
+    <h2>"We weren't happy with the teacher last term"</h2>
+    <p class="prose">
+      This sentence isn't in any keyword list — yet the system still
+      catches it as a complaint. Step by step, here's what happens:
+    </p>
+
+    <div class="journey">
+      <div class="step"><span class="num">01</span><div><b>The message arrives.</b><p>Meta drops it at the webhook address; the server picks it up within seconds.</p></div></div>
+      <div class="step"><span class="num">02</span><div><b>Button or profanity check.</b><p>Neither — the flow continues.</p></div></div>
+      <div class="step"><span class="num">03</span><div><b>The number is looked up.</b><p>If it's in the <code class="m">students</code> table, support mode kicks in; otherwise sales mode.</p></div></div>
+      <div class="step"><span class="num">04</span><div><b>The model is called.</b><p>A reply, an intent (<code class="m">complaint</code>), and a confidence score (0.9) all come back in one shot.</p></div></div>
+      <div class="step"><span class="num">05</span><div><b>An empathetic reply goes out.</b><p>A short message with no defensiveness and no sales talk.</p></div></div>
+      <div class="step"><span class="num">06</span><div><b>A complaint record opens.</b><p>Written to the <code class="m">complaints</code> table with a deadline 24 hours out.</p></div></div>
+      <div class="step"><span class="num">07</span><div><b>Staff get an email.</b><p>With the customer's number, the complaint text, and the response deadline.</p></div></div>
+      <div class="step"><span class="num">08</span><div><b>The customer gets a promise.</b><p>"Your complaint is recorded — we'll get back to you within 24 hours at the latest."</p></div></div>
+      <div class="step"><span class="num">09</span><div><b>If the deadline passes, a reminder fires.</b><p>If the record is still open, the hourly check sends a second email — nothing gets forgotten.</p></div></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>SevimsOffice/ALWA</span>
+    <span>branch: claude/alwa-whatsapp-agent-8hwvzb</span>
+    <span>version: v2 — three-layer router</span>
+  </footer>
+
+</div>
